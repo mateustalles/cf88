@@ -27,7 +27,6 @@ const insertPages = async (pages) => {
 }
 
 const findPage = async (sheetSlug, id, verbatimSlug) => {
-//   const verbatimRe = new RegExp(`^${verbatimSlug.slice(10)}.*$`);
   const page = await connection()
     .then((db) => db.collection('pages')
   .findOne({
