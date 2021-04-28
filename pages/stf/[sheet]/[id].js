@@ -37,7 +37,7 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
     const { params: { sheet, id } } = context;
 
-  const page = await findPage(sheet, id)
+  const page = await findPage(sheet, id);
 
   return {
     props: {
