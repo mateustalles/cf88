@@ -1,12 +1,11 @@
 import { useRouter } from 'next/router'
-import { findPage } from '../../../models/pagesModel';
-import { fetchData } from '../../../libs/fetchData'
+import { findPage, getAllPages } from '../../../models/pagesModel';
 import '../../../styles/Verbatim.module.css'
 
 const Verbatim = ({ page }) => {
   const router = useRouter()
   const { sheet } = router.query
-  const sheetData = page[sheet];
+  const sheetData = page['data'];
   const { sheetTitle, data } = sheetData;
   const idVerbete = Object.values(data[data.length - 1])
 
@@ -23,7 +22,7 @@ const Verbatim = ({ page }) => {
 }
 
 export async function getStaticPaths() {
-  const rawData = await fetchData();
+  const rawData = await getAllPages();
   const paths = rawData.map(({ sheetSlug, _id }) => ({
     params: { sheet: sheetSlug, id: _id }
   }));

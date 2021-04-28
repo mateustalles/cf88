@@ -2,14 +2,15 @@ const connection = require('./connection');
 
 const insertPages = async (pages) => {
   const updateArray = pages.map((page) => {
-    const { _id, ...newPageObj } = page;
-    const { sheetSlug } = newPageObj;
+    const { _id, sheetSlug, verbatimSlug, ...newPageObj } = page;
     return ({
       updateOne: {
         filter: { "_id": page._id},
         update: {
           $set: {
-            [sheetSlug]: { ...newPageObj },
+            sheetSlug,
+            verbatimSlug,
+            data: { ...newPageObj },
           },
         },
         upsert: true,
@@ -28,21 +29,20 @@ const insertPages = async (pages) => {
 
 const findPage = async (sheetSlug, id) => {
   const page = await connection()
-    .then((db) => db.collection('pages')
-  .findOne({
-    $and:
-      [
-        {
-          _id: id,
-        },
-        {
-          [`${sheetSlug}.sheetSlug`]: sheetSlug,
+    .then((db) => db.collection('pages').findOne({
+      $and:
+        [
+          {
+            _id: id,
+          },
+          {
+            [`${sheetSlug}.sheetSlug`]: sheetSlug,
+          }
+        ]
+      }, {
+        projection: {
+          [`${sheetSlug}.verbatimSlug`]: 0,
         }
-      ]
-    }, {
-      projection: {
-        [`${sheetSlug}.verbatimSlug`]: 0,
-      }
     }).then((data) => data)
     .catch((err) => {
       throw Error(err);
@@ -51,8 +51,14 @@ const findPage = async (sheetSlug, id) => {
   return page;
 }
 
+const getAllPages = async () => {
+  const pages = await connection()
+    .then((db) => db.collection('pages').find().toArray());
+  return pages
+}
 
 module.exports = {
   insertPages,
   findPage,
+  getAllPages,
 }
