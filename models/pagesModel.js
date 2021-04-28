@@ -26,7 +26,7 @@ const insertPages = async (pages) => {
   return updatedPages;
 }
 
-const findPage = async (sheetSlug, id, verbatimSlug) => {
+const findPage = async (sheetSlug, id) => {
   const page = await connection()
     .then((db) => db.collection('pages')
   .findOne({
@@ -36,13 +36,12 @@ const findPage = async (sheetSlug, id, verbatimSlug) => {
           _id: id,
         },
         {
-          [`${sheetSlug}.verbatimSlug`]: verbatimSlug,
+          [`${sheetSlug}.sheetSlug`]: sheetSlug,
         }
       ]
     }, {
       projection: {
         [`${sheetSlug}.verbatimSlug`]: 0,
-        [`${sheetSlug}.sheetSlug`]: 0
       }
     }).then((data) => data)
     .catch((err) => {
