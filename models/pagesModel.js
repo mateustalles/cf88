@@ -3,7 +3,7 @@ const connection = require('./connection');
 const insertPages = async (pages) => {
   const updateArray = pages.map((page) => {
     const sheetSlug = Object.keys(page)[0];
-    const { [sheetSlug]: { pageSlug, sheetTitle, verbatimSlug, url, data } } = page;
+    const { [sheetSlug]: { pageSlug, sheetTitle, verbatimSlug, data } } = page;
     return ({
       updateOne: {
         filter: { [`${sheetSlug}.pageSlug`]: pageSlug },
@@ -13,7 +13,6 @@ const insertPages = async (pages) => {
               pageSlug,
               sheetTitle,
               verbatimSlug,
-              url,
               data,
             },
           },
@@ -61,7 +60,15 @@ const findPage = async (sheetSlug, pageSlug) => {
 }
 
 const getAllPages = async () => {
-  const pages = await connection().then((db) => db.collection('pages').find().toArray()
+  const pages = await connection().then((db) => db.collection('pages').find(
+    {},
+    {
+      projection:
+        {
+          _id: 0,
+        }
+      }
+  ).toArray()
     .catch((err) => {
       throw Error(err);
     }));

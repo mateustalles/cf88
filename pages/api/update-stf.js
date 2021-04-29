@@ -4,7 +4,7 @@ const { fetchData } = require('../../libs/fetchData');
 const updateSheets = async (req, res) => {
   const sheets = await fetchData();
   await pagesModel.insertPages(sheets)
-    .then(() => res.status(200).json(sheets))
+    .then((data) => res.status(200).json(sheets))
     .catch((err) => {
       throw Error(err);
     });

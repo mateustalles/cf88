@@ -14,8 +14,9 @@ const Verbatim = ({ page }) => {
       <h1>{sheetTitle}: {pageTitle}</h1>
       { Object.values(data).map((entry, index) => {
         const [[title, value]] = Object.entries(entry);
-        if (index === 0) return <h3>{value}</h3>
-        return <p key={`${title}_${value}`}>{title.toUpperCase() + ':'} {value}</p>
+        if (index === 0) return <h3 key="value">{value}</h3>;
+        else if (index === data.length - 1) return;
+        return <p key={`${title}_${value}`}>{title.toUpperCase() + ':'} {value}</p>;
       }) }
     </div>
   )
@@ -24,7 +25,7 @@ const Verbatim = ({ page }) => {
 export async function getStaticPaths() {
   const rawData = await getAllPages();
   const paths = rawData.map((page) => {
-    const sheetSlug = Object.keys(page)[1];
+    const sheetSlug = Object.keys(page)[0];
     return {
       params: { sheet: sheetSlug, title: page[sheetSlug].pageSlug }
     };

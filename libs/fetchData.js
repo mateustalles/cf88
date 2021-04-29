@@ -37,8 +37,7 @@ const fetchData = async () => {
         pageSlug,
         verbatimSlug,
         sheetTitle,
-        url: `stf/${sheetSlug}/${pageSlug}`,
-        data: [{ pageTitle }, ...entryList],
+        data: [{ pageTitle }, ...entryList, { URL: `stf/${sheetSlug}/${pageSlug}` }],
         }
       }
     });
