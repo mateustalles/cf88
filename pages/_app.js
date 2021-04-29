@@ -1,7 +1,14 @@
 import '../styles/globals.css'
+import App from 'next/app';
+import CF88Provider from '../context/CF88Context';
 
-function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+export default class MyApp extends App {
+  render() {
+    const { Component, pageProps } = this.props;
+    return (
+      <CF88Provider>
+        <Component {...pageProps} />
+      </CF88Provider>
+    )
+  }
 }
-
-export default MyApp

@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getAllPages } from '../../models/pagesModel';
-import Table from 'react-bootstrap/Table';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
 import Head from 'next/head';
-
+import ControlPanelTable from '../../components/ControlPanelTable'
 
 const ControlPanel = ({ data }) => {
-
   const sheets = [
     ['TESE SEM REPERCUSSÃO GERAL', 'teses-sem-repercussao-geral'],
     ['TESE COM REPERCUSSÃO GERAL', 'teses-com-repercussao-geral'],
@@ -14,22 +16,16 @@ const ControlPanel = ({ data }) => {
     ['SÚMULA STF', 'sumula-stf'],
   ];
 
-  const [filteredPages, setFilteredPages] = useState();
   const [filter, setFilter] = useState(sheets[0][1]);
 
+  const filterHandler = (e) => {
+    const { target: { value } } = e;
+    const filter = sheets.filter(([filter]) => filter === value);
+    setFilter(filter[0][1]);
+  }
 
-  useEffect(() => {
-    const filteredPages = data.filter((page) => Object.keys(page)[0] === filter);
-    setFilteredPages(filteredPages);
-    return () => setFilteredPages([]);
-  }, [filter, setFilteredPages]);
-
-  const pageHeaders = filteredPages && filteredPages[0][filter]['data']
-  // const pageData = filteredPages && filteredPages.map((page) => ({
-  //   page[filter]
-  // }));
   return (
-    <>
+    <Container>
       <Head>
         <title>Painel Administrativo</title>
         <link rel="icon" href="/favicon.ico" />
@@ -40,18 +36,30 @@ const ControlPanel = ({ data }) => {
           crossOrigin="anonymous"
         />
       </Head>
-      <Table striped bordered hover>
-        <thead>
-          {pageHeaders && pageHeaders.map((page, index) => index === 0
-            ? <th>Título</th> : <th>{Object.keys(page)}</th>)}
-        </thead>
-        <tbody>
-          <tr>
-            {/* {pageData && pageData.map()} */}
-          </tr>
-        </tbody>
-      </Table>
-    </>
+      <Row>
+        <Col md={2}>
+        </Col>
+        <Col md={10}>
+          <Row>
+            <h1>Edição do banco de dados</h1>
+          </Row>
+          <Row>
+            <Form.Group controlId="sheet-selection">
+              <Form.Label>Planilha: </Form.Label>
+              <Form.Control as="select" onChange={(e) => filterHandler(e)}>
+                {sheets.map(([sheetTitle,]) => <option key={sheetTitle}>{sheetTitle}</option>)}
+              </Form.Control>
+              <Form.Text className="text-muted">
+                Escolha a planilha a ser editada
+              </Form.Text>
+            </Form.Group>
+          </Row>
+          <Row>
+            <ControlPanelTable data={data} filter={filter}/>
+          </Row>
+        </Col>
+      </Row>
+    </Container>
   )
 }
 

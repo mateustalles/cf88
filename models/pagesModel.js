@@ -72,6 +72,7 @@ const getAllPages = async () => {
     .catch((err) => {
       throw Error(err);
     }));
+
   return pages
 }
 
