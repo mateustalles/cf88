@@ -19,7 +19,7 @@ const fetchData = async () => {
 
     const refinedData = rawData.map((row) => {
       const pageTitle = row[0];
-      const rowId = pageTitle.trim().replace(/\s/g, '-').toLowerCase();
+      const pageSlug = pageTitle.trim().replace(/\s/g, '-').toLowerCase();
       let verbatimSlug = row[1];
       verbatimSlug = verbatimSlug.replace(/(?:\\[rn]|[\r\n]+)+/g, "");
       verbatimSlug = verbatimSlug.trim().split(' ')
@@ -33,12 +33,14 @@ const fetchData = async () => {
       const entryList = row.map((cel, index) => ({ [headers[index + 1]]: cel }));
 
       return {
-        _id: rowId,
+        [sheetSlug]: {
+        pageSlug,
         verbatimSlug,
         sheetTitle,
-        sheetSlug,
-        data: [{ titulo: pageTitle }, ...entryList],
-      };
+        url: `stf/${sheetSlug}/${pageSlug}`,
+        data: [{ pageTitle }, ...entryList],
+        }
+      }
     });
 
     return refinedData;

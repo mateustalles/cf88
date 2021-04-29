@@ -3,16 +3,16 @@ import { findPage, getAllPages } from '../../../models/pagesModel';
 import '../../../styles/Verbatim.module.css'
 
 const Verbatim = ({ page }) => {
-  const router = useRouter()
-  const { sheet } = router.query
-  const sheetData = page['data'];
-  const { sheetTitle, data } = sheetData;
-  const idVerbete = Object.values(data[data.length - 1])
+  const router = useRouter();
+  const { sheet } = router.query;
+  const { sheetTitle } = page[sheet];
+  const sheetData = page[sheet]['data'];
+  const [{ pageTitle }, ...data ] = sheetData;
 
   return (
     <div className="verbatim">
-      <h1>{sheetTitle}: {idVerbete}</h1>
-      { data.map((entry, index) => {
+      <h1>{sheetTitle}: {pageTitle}</h1>
+      { Object.values(data).map((entry, index) => {
         const [[title, value]] = Object.entries(entry);
         if (index === 0) return <h3>{value}</h3>
         return <p key={`${title}_${value}`}>{title.toUpperCase() + ':'} {value}</p>
@@ -23,9 +23,12 @@ const Verbatim = ({ page }) => {
 
 export async function getStaticPaths() {
   const rawData = await getAllPages();
-  const paths = rawData.map(({ sheetSlug, _id }) => ({
-    params: { sheet: sheetSlug, id: _id }
-  }));
+  const paths = rawData.map((page) => {
+    const sheetSlug = Object.keys(page)[1];
+    return {
+      params: { sheet: sheetSlug, title: page[sheetSlug].pageSlug }
+    };
+  });
 
   return {
     paths,
@@ -34,9 +37,9 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-    const { params: { sheet, id } } = context;
+    const { params: { sheet, title } } = context;
 
-  const page = await findPage(sheet, id);
+  const page = await findPage(sheet, title);
 
   return {
     props: {

@@ -2,21 +2,33 @@ const connection = require('./connection');
 
 const insertPages = async (pages) => {
   const updateArray = pages.map((page) => {
-    const { _id, sheetSlug, verbatimSlug, ...newPageObj } = page;
+    const sheetSlug = Object.keys(page)[0];
+    const { [sheetSlug]: { pageSlug, sheetTitle, verbatimSlug, url, data } } = page;
     return ({
       updateOne: {
-        filter: { "_id": page._id},
+        filter: { [`${sheetSlug}.pageSlug`]: pageSlug },
         update: {
           $set: {
-            sheetSlug,
-            verbatimSlug,
-            data: { ...newPageObj },
+            [sheetSlug]: {
+              pageSlug,
+              sheetTitle,
+              verbatimSlug,
+              url,
+              data,
+            },
           },
         },
         upsert: true,
       },
     })
   });
+
+  const dropDB = await connection()
+    .then((db) => db.collection('pages').drop())
+    .catch((err) => {
+      if(err.message.match(/ns not found/)) return null;
+      throw new Error(err);
+    });
 
   const updatedPages = await connection()
     .then((db) => db.collection('pages').bulkWrite([...updateArray], { ordered: false })
@@ -27,23 +39,20 @@ const insertPages = async (pages) => {
   return updatedPages;
 }
 
-const findPage = async (sheetSlug, id) => {
+const findPage = async (sheetSlug, pageSlug) => {
   const page = await connection()
-    .then((db) => db.collection('pages').findOne({
-      $and:
-        [
-          {
-            _id: id,
-          },
-          {
-            [`${sheetSlug}.sheetSlug`]: sheetSlug,
-          }
-        ]
-      }, {
-        projection: {
+    .then((db) => db.collection('pages').findOne(
+      {
+        [`${sheetSlug}.pageSlug`]: pageSlug,
+      },
+      {
+        projection:
+        {
+          _id: 0,
           [`${sheetSlug}.verbatimSlug`]: 0,
         }
-    }).then((data) => data)
+      }
+    ).then((data) => data )
     .catch((err) => {
       throw Error(err);
     }));
@@ -52,8 +61,10 @@ const findPage = async (sheetSlug, id) => {
 }
 
 const getAllPages = async () => {
-  const pages = await connection()
-    .then((db) => db.collection('pages').find().toArray());
+  const pages = await connection().then((db) => db.collection('pages').find().toArray()
+    .catch((err) => {
+      throw Error(err);
+    }));
   return pages
 }
 
