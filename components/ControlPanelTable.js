@@ -11,7 +11,6 @@ const ControlPanelTable = ({ data, filter }) => {
   const [pages, setPages] = useState();
   const { editionModal: [displayModal, setDisplayModal] } = useContext(CF88Context);
   const [editedItem, setEditedItem] = useState([]);
-  // const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const filteredPages = filter && data.filter((page) => Object.keys(page)[0] === filter);

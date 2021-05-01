@@ -79,7 +79,6 @@ const getAllPages = async () => {
 
 const updateOne = async (page) => {
   const { sheetSlug, sheetTitle, pageSlug, verbatimSlug, data  } = page
-  console.log(data);
   const updateOne = await connection()
     .then((db) => db.collection('pages').updateOne(
     {
@@ -102,8 +101,7 @@ const updateOne = async (page) => {
     }
   ));
 
-  const matched = updateOne.matchedCount;
-  console.log(data);
+  // const matched = updateOne.matchedCount;
   return updateOne;
 }
 

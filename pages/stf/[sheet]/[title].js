@@ -5,6 +5,11 @@ import '../../../styles/Verbatim.module.css'
 
 const Verbatim = ({ page }) => {
   const router = useRouter();
+
+  if (router.isFallback) {
+    return <div>Loading...</div>
+  }
+
   const { sheet } = router.query;
   const { sheetTitle } = page[sheet];
   const sheetData = page[sheet]['data'];
@@ -34,12 +39,12 @@ export async function getStaticPaths() {
 
   return {
     paths,
-    fallback: false,
+    fallback: true,
   }
 }
 
 export async function getStaticProps(context) {
-    const { params: { sheet, title } } = context;
+  const { params: { sheet, title } } = context;
 
   const page = await findPage(sheet, title);
 
@@ -47,6 +52,7 @@ export async function getStaticProps(context) {
     props: {
       page,
     },
+    revalidate: 1,
   }
 }
 

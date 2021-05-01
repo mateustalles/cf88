@@ -14,8 +14,6 @@ const fetchData = async () => {
 
   const sheetsData = sheetList.map(async ([ sheetTitle, sheetSlug]) => {
     const sheet = doc.sheetsByTitle[sheetTitle];
-    const docInfos = await doc.loadInfo();
-    console.log(await docInfos)
     const rows = await sheet.getRows();
     const headers = Object.keys(rows[0]).filter((key) => !key.includes('_'));
     const rawData = rows.map(({ _rawData }) => _rawData);
