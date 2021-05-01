@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable react/jsx-key */
+/* eslint-disable react/prop-types */
+import React, { useState, useEffect, useRef } from 'react';
 import Table from 'react-bootstrap/Table';
 import EditorModal from './EditorModal';
 
@@ -17,17 +19,32 @@ const ControlPanelTable = ({ data, filter }) => {
   const pageHeaders = pages && pages[0][filter] && pages[0][filter]['data']
   const pageData = pages && pages[0][filter] && pages.map((page) => page[filter]['data']);
 
-  const handleShow = (e) => {
-    const { target: { name: pageIndex }} = e;
-    setEditedItem(pages[pageIndex]);
+  const handleShow = (index) => {
+    setEditedItem(pageData[index]);
     setShowModal(true);
   }
 
   const handleClose = () => setShowModal(false);
 
+  const formRef = useRef();
+
+  useEffect(() => {
+    formRef.current && formRef.current.addEventListener('onLoad', () => {
+      console.log('enviado')
+    })
+    console.log(formRef.current)
+  }, [formRef]);
+
   return (
     <>
-      <EditorModal data={editedItem} headers={pageHeaders} showModal={showModal} handleClose={handleClose} />
+      <EditorModal
+        data={editedItem}
+        sheetSlug={filter}
+        headers={pageHeaders}
+        showModal={showModal}
+        handleClose={handleClose}
+        ref={formRef}
+      />
       <Table striped bordered hover>
         <thead>
           {pageHeaders && pageHeaders.map((page, index) => index === 0
@@ -39,7 +56,7 @@ const ControlPanelTable = ({ data, filter }) => {
               return (
                 <tr>
                   {page.map((obj) => Object.values(obj).map((value) => (
-                  <td name={index} onClick={(e) => handleShow(e)}>
+                  <td onClick={() => handleShow(index)}>
                     {value}
                   </td>
                   )))}

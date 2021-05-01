@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useRouter } from 'next/router'
 import { findPage, getAllPages } from '../../../models/pagesModel';
 import '../../../styles/Verbatim.module.css'
