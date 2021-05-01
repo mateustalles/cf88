@@ -1,13 +1,14 @@
-/* eslint-disable react/no-unknown-property */
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { getAllPages } from '../../models/pagesModel';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Head from 'next/head';
-import ControlPanelTable from '../../components/ControlPanelTable'
+import dynamic from 'next/dynamic'
+
+const ControlPanelTable = dynamic(() => import('../../components/ControlPanelTable'))
 
 const ControlPanel = ({ data }) => {
   const sheets = [

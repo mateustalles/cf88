@@ -34,7 +34,6 @@ const fetchData = async () => {
       verbatimSlug = verbatimSlug.toLowerCase();
       row.shift();
       const entryList = row.map((cel, index) => ({ [headers[index + 1]]: cel }));
-      // console.log(entryList);
       return {
         [sheetSlug]: {
         pageSlug,

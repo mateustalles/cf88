@@ -1,14 +1,17 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import Table from 'react-bootstrap/Table';
-import EditorModal from './EditorModal';
+import dynamic from 'next/dynamic'
+import { CF88Context } from '../context/CF88Context'
 
+const EditorModal = dynamic(() => import('./EditorModal'))
 
 const ControlPanelTable = ({ data, filter }) => {
   const [pages, setPages] = useState();
+  const { editionModal: [displayModal, setDisplayModal] } = useContext(CF88Context);
   const [editedItem, setEditedItem] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const filteredPages = filter && data.filter((page) => Object.keys(page)[0] === filter);
@@ -21,19 +24,10 @@ const ControlPanelTable = ({ data, filter }) => {
 
   const handleShow = (index) => {
     setEditedItem(pageData[index]);
-    setShowModal(true);
+    setDisplayModal(true);
   }
 
-  const handleClose = () => setShowModal(false);
-
   const formRef = useRef();
-
-  useEffect(() => {
-    formRef.current && formRef.current.addEventListener('onLoad', () => {
-      console.log('enviado')
-    })
-    console.log(formRef.current)
-  }, [formRef]);
 
   return (
     <>
@@ -41,8 +35,8 @@ const ControlPanelTable = ({ data, filter }) => {
         data={editedItem}
         sheetSlug={filter}
         headers={pageHeaders}
-        showModal={showModal}
-        handleClose={handleClose}
+        showModal={displayModal}
+        // handleClose={handleClose}
         ref={formRef}
       />
       <Table striped bordered hover>
@@ -51,18 +45,16 @@ const ControlPanelTable = ({ data, filter }) => {
             ? <th>Título</th> : <th>{Object.keys(page)}</th>)}
         </thead>
         <tbody>
-            {pageData && Object.values(pageData).map((page, index) => {
-              const identifier = Math.floor(Math.random() * 99999999);
-              return (
-                <tr>
-                  {page.map((obj) => Object.values(obj).map((value) => (
-                  <td onClick={() => handleShow(index)}>
-                    {value}
-                  </td>
-                  )))}
-                </tr>
+            {pageData && Object.values(pageData).map((page, index) => (
+              <tr>
+                {page.map((obj) => Object.values(obj).map((value) => (
+                <td onClick={() => handleShow(index)}>
+                  {value}
+                </td>
+                )))}
+              </tr>
               )
-            })}
+            )}
         </tbody>
       </Table>
     </>

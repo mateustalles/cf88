@@ -4,10 +4,10 @@ import PropTypes from 'prop-types';
 export const CF88Context = createContext();
 
 export default function CF88Provider({ children }) {
-
+  const [displayModal, setDisplayModal] = useState(false);
 
   const store = {
-
+    editionModal: [displayModal, setDisplayModal],
   };
 
   return <CF88Context.Provider value={store}>{children}</CF88Context.Provider>;

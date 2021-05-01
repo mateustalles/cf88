@@ -23,7 +23,7 @@ const insertPages = async (pages) => {
     })
   });
 
-  const dropDB = await connection()
+  await connection()
     .then((db) => db.collection('pages').drop())
     .catch((err) => {
       if(err.message.match(/ns not found/)) return null;
@@ -77,8 +77,40 @@ const getAllPages = async () => {
   return pages
 }
 
+const updateOne = async (page) => {
+  const { sheetSlug, sheetTitle, pageSlug, verbatimSlug, data  } = page
+  console.log(data);
+  const updateOne = await connection()
+    .then((db) => db.collection('pages').updateOne(
+    {
+      [`${sheetSlug}.pageSlug`]: pageSlug,
+    },
+    {
+      $set:
+        {
+          [sheetSlug]:
+            {
+              pageSlug,
+              sheetTitle,
+              verbatimSlug,
+              data,
+            }
+        }
+    },
+    {
+      upsert : true,
+    }
+  ));
+
+  const matched = updateOne.matchedCount;
+  console.log(data);
+  return updateOne;
+}
+
+
 module.exports = {
   insertPages,
   findPage,
   getAllPages,
+  updateOne,
 }

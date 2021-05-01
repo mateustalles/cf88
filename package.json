@@ -24,5 +24,8 @@
     "eslint": "^7.25.0",
     "eslint-plugin-react": "^7.23.2",
     "eslint-plugin-react-hooks": "^4.2.0"
-  }
+  },
+  "browser":{
+    "child_process": false
+    }
 }
