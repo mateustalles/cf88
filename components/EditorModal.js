@@ -79,8 +79,6 @@ const EditorModal = forwardRef(({ data, sheetSlug, headers, type='update' }, ref
       event.stopPropagation();
     }
 
-    setValidated(true);
-
     const sheetTitle = sheets.filter(([, slug]) => slug === sheetSlug)[0][0];
     const verbatimSlug = makeVerbatimSlug(Object.values(pageData)[1]);
     const { pageTitle, ...entries } = pageData;
@@ -93,6 +91,8 @@ const EditorModal = forwardRef(({ data, sheetSlug, headers, type='update' }, ref
       data: [{ pageTitle }, ...entriesObjects]
     };
     await requestHandler(request);
+
+    setValidated(true);
   };
 
   const requestHandler = useCallback(async (payload, action='update-one') => {

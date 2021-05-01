@@ -1,5 +1,3 @@
-import { reset } from 'nodemon';
-
 const pagesModel = require('../../models/pagesModel');
 
 const updateOne = async (req, res) => {
