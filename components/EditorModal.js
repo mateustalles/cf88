@@ -16,6 +16,8 @@ const EditorModal = forwardRef(({ data, sheetSlug, headers, type='update' }, ref
   const [pageData, setPageData] = useState({});
   const router = useRouter();
   const formData = useRef();
+  const inputRef = useRef([]);
+  const formRef = useRef();
 
   const makeVerbatimSlug = (value) => {
     let verbatimSlug = value.replace(/(?:\\[rn]|[\r\n]+)+/g, "");
@@ -73,26 +75,27 @@ const EditorModal = forwardRef(({ data, sheetSlug, headers, type='update' }, ref
       ['SÚMULA STF', 'sumula-stf'],
     ];
 
-    const form = event.currentTarget;
+    const form = formRef.current;
     if (form.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
+      form.checkValidity()
+    } else {
+      const sheetTitle = sheets.filter(([, slug]) => slug === sheetSlug)[0][0];
+      const verbatimSlug = makeVerbatimSlug(Object.values(pageData)[1]);
+      const { pageTitle, ...entries } = pageData;
+      const entriesObjects = Object.entries(entries).map(([key, value]) => ({ [key]: value }));
+      const request = {
+        sheetSlug,
+        sheetTitle,
+        verbatimSlug,
+        pageSlug: makePageSlug(pageTitle),
+        data: [{ pageTitle }, ...entriesObjects]
+      };
+      await requestHandler(request);
+
+      setValidated(true);
     }
-
-    const sheetTitle = sheets.filter(([, slug]) => slug === sheetSlug)[0][0];
-    const verbatimSlug = makeVerbatimSlug(Object.values(pageData)[1]);
-    const { pageTitle, ...entries } = pageData;
-    const entriesObjects = Object.entries(entries).map(([key, value]) => ({ [key]: value }));
-    const request = {
-      sheetSlug,
-      sheetTitle,
-      verbatimSlug,
-      pageSlug: makePageSlug(pageTitle),
-      data: [{ pageTitle }, ...entriesObjects]
-    };
-    await requestHandler(request);
-
-    setValidated(true);
   };
 
   const requestHandler = useCallback(async (payload, action='update-one') => {
@@ -114,20 +117,12 @@ const EditorModal = forwardRef(({ data, sheetSlug, headers, type='update' }, ref
     formData.current = generateFields(type, pageData);
     router.prefetch('/admin/cp')
     setPageData(pageData);
-
-    return () => {
-      const pageData = {};
-      generateFields('blank', pageData);
-      setPageData(pageData);
-    }
   }, [data, headers, type, router, generateFields]);
-
-  const formRef = useRef([]);
 
   const changeHandler = (e) => {
     const { target: { form, name, value } } = e;
     const pageSlug = makePageSlug(form[0].value)
-    formRef.current[formRef.current.length - 1].value = `stf/${sheetSlug}/${pageSlug}`;
+    inputRef.current[inputRef.current.length - 1].value = `stf/${sheetSlug}/${pageSlug}`;
 
     setPageData((data) => ({ ...data, [name]: value }));
   }
@@ -143,7 +138,7 @@ const EditorModal = forwardRef(({ data, sheetSlug, headers, type='update' }, ref
         <Modal.Title>Editar / Criar Entrada e Página</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form noValidate validated={validated} onSubmit={handleSubmit} ref={ref}>
+        <Form noValidate validated={validated} onSubmit={false} ref={formRef}>
           {formData.current && formData.current.map(([[key, value, type]]) => {
             return (
               <Form.Row>
@@ -151,7 +146,7 @@ const EditorModal = forwardRef(({ data, sheetSlug, headers, type='update' }, ref
                   <Form.Label>{key === 'pageTitle' ? 'Título' : key}:</Form.Label>
                   <Form.Control
                     onChange={(e) => changeHandler(e)}
-                    ref={(ref) => formRef.current.push(ref)}
+                    ref={(ref) => inputRef.current.push(ref)}
                     as={type === 'textarea' ? type : 'input'}
                     name={key}
                     type={type}
@@ -168,10 +163,10 @@ const EditorModal = forwardRef(({ data, sheetSlug, headers, type='update' }, ref
             )
           })}
           <Form.Row>
-            <Button variant="secondary" onClick={handleClose}>
+            <Button type="button" variant="secondary" onClick={handleClose}>
               Close
             </Button>
-            <Button variant="primary" type="submit">Salvar</Button>
+            <Button variant="primary" onClick={handleSubmit}>Salvar</Button>
           </Form.Row>
         </Form>
       </Modal.Body>
