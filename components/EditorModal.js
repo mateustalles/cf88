@@ -103,7 +103,8 @@ const EditorModal = forwardRef(({ data, sheetSlug, headers, type='update' }, ref
         body: JSON.stringify({ ...payload }),
       })
       .then((res) => {
-        // if (res.ok) router.push('/admin/cp');
+        console.log(res);
+        if (res.ok) router.reload();
       })
     }
   }, [router]);
@@ -112,6 +113,19 @@ const EditorModal = forwardRef(({ data, sheetSlug, headers, type='update' }, ref
   useEffect(() => {
     const pageData = {};
     formData.current = generateFields(type, pageData);
+    router.prefetch('/admin/cp')
+
+    router.beforePopState(({ url, as, options }) => {
+      // I only want to allow these two routes!
+      if (as !== '/admin/cp') {
+        // Have SSR render bad routes as a 404.
+        window.location.href = as
+        return false
+      }
+
+      return true
+    })
+
     setPageData(pageData);
 
     return () => {
@@ -119,7 +133,7 @@ const EditorModal = forwardRef(({ data, sheetSlug, headers, type='update' }, ref
       generateFields('blank', pageData);
       setPageData(pageData);
     }
-  }, [data, headers, type, generateFields]);
+  }, [data, headers, type, router, generateFields]);
 
   const formRef = useRef([]);
 
