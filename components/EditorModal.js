@@ -10,12 +10,13 @@ import { useRouter } from 'next/router'
 import { CF88Context } from '../context/CF88Context'
 
 
-const EditorModal = forwardRef(({ data, sheetSlug, headers, type='update' }, ref) => {
+const EditorModal = forwardRef(({ sheetSlug, type='update' }, ref) => {
   const [validated, setValidated] = useState(false);
-  const { editionModal: [displayModal, setDisplayModal] } = useContext(CF88Context);
+  const { editionModal: [displayModal, setDisplayModal, data, , headers] } = useContext(CF88Context);
   const [pageData, setPageData] = useState({});
+  const [formData, setFormData] = useState();
+
   const router = useRouter();
-  const formData = useRef();
   const inputRef = useRef([]);
   const formRef = useRef();
 
@@ -44,8 +45,8 @@ const EditorModal = forwardRef(({ data, sheetSlug, headers, type='update' }, ref
   }
 
   const generateFields = useCallback((action=type, targetObj) => {
-    const source = action === 'blank' ? headers : data;
-    return source && source.map((set) => Object.entries(set).map(([key, value]) => {
+    const source = action === 'blank' && headers ? headers : data;
+    return  source && source.length > 0 && source.map((set) => Object.entries(set).map(([key, value]) => {
       Object.assign(targetObj, { [key]: action === 'blank' ? '' : value });
       if (value.length > 30) return [key, value, 'textarea'];
       if (value.match(/^\d+\/\d+\/\d+$/gi)) {
@@ -113,17 +114,17 @@ const EditorModal = forwardRef(({ data, sheetSlug, headers, type='update' }, ref
 
 
   useEffect(() => {
-    const pageData = {};
-    formData.current = generateFields(type, pageData);
-    router.prefetch('/admin/cp')
-    setPageData(pageData);
-  }, [data, headers, type, router, generateFields]);
+    const content = {};
+    generateFields('update', content)
+    setFormData(generateFields('update', content));
+    router.prefetch('/admin/cp');
+    setPageData(content);
+  }, [generateFields, router]);
 
   const changeHandler = (e) => {
     const { target: { form, name, value } } = e;
     const pageSlug = makePageSlug(form[0].value)
-    inputRef.current[inputRef.current.length - 1].value = `stf/${sheetSlug}/${pageSlug}`;
-
+    inputRef.current[inputRef.current.length - 1].value = `https://www.cf88.com.br/stf/${sheetSlug}/${pageSlug}`;
     setPageData((data) => ({ ...data, [name]: value }));
   }
 
@@ -139,7 +140,7 @@ const EditorModal = forwardRef(({ data, sheetSlug, headers, type='update' }, ref
       </Modal.Header>
       <Modal.Body>
         <Form noValidate validated={validated} onSubmit={false} ref={formRef}>
-          {formData.current && formData.current.map(([[key, value, type]]) => {
+          {formData && formData.map(([[key, value, type]]) => {
             return (
               <Form.Row>
                 <Form.Group as={Col} md="12" controlId={`formBasic${key}`} >

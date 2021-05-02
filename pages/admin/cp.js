@@ -40,9 +40,9 @@ const ControlPanel = ({ data }) => {
         />
       </Head>
       <Row>
-        <Col md={2}>
-        </Col>
-        <Col md={10}>
+        {/* <Col md={2}>
+        </Col> */}
+        <Col md={12}>
           <Row>
             <h1>Edição do banco de dados</h1>
           </Row>

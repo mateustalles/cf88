@@ -37,7 +37,7 @@ const fetchData = async () => {
         pageSlug,
         verbatimSlug,
         sheetTitle,
-        data: [{ pageTitle }, ...entryList, { URL: `stf/${sheetSlug}/${pageSlug}` }],
+        data: [{ pageTitle }, ...entryList, { URL: `https://www.cf88.com.br/stf/${sheetSlug}/${pageSlug}` }],
         }
       }
     });
