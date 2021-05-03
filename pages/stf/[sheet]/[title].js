@@ -7,10 +7,11 @@ const Verbatim = ({ page }) => {
   const router = useRouter();
 
   if (router.isFallback) {
-    return <div>Loading...</div>
+    return <div>Carregando...</div>
   }
 
   const { sheet } = router.query;
+
   const { sheetTitle } = page[sheet];
   const sheetData = page[sheet]['data'];
   const [{ pageTitle }, ...data ] = sheetData;
