@@ -70,15 +70,42 @@ const getAllPages = async () => {
         }
       }
   ).toArray()
-  .catch((err) => {
-    throw Error(err);
-  }));
+    .catch((err) => {
+      throw Error(err);
+    }));
 
   return pages
 }
 
+const updateOne = async (page) => {
+  const { sheetSlug, sheetTitle, pageSlug, verbatimSlug, data  } = page
+  const updateOne = await connection()
+    .then((db) => db.collection('pages').updateOne(
+    {
+      [`${sheetSlug}.pageSlug`]: pageSlug,
+    },
+    {
+      $set:
+        {
+          [sheetSlug]:
+            {
+              pageSlug,
+              sheetTitle,
+              verbatimSlug,
+              data,
+            }
+        }
+    },
+    {
+      upsert : true,
+    }
+  ));
+
+  return updateOne;
+}
+
 const deleteOne = async (page) => {
-  const { sheetSlug, pageSlug, } = page
+  const { sheetSlug, pageSlug } = page
   const deleted = await connection()
     .then((db) => db.collection('pages').deleteOne(
       {
@@ -92,11 +119,10 @@ const deleteOne = async (page) => {
   return deleted;
 }
 
-
 module.exports = {
   insertPages,
   findPage,
   getAllPages,
   updateOne,
-  deleteOne,
+  deleteOne
 }

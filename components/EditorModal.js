@@ -33,7 +33,7 @@ const DeleteModal = (props) => {
         <Button
           type="button"
           variant="danger"
-          onClick={props.requestHandler(props.payload, 'delete-one')}
+          onClick={props.requestHandler(null, 'delete-one')}
         >
           Deletar
         </Button>
@@ -166,7 +166,22 @@ const EditorModal = ({ sheetSlug }) => {
         if (res.ok) router.reload();
       })
     }
-  }, [router]);
+    if (action === 'delete-one') {
+      const { pageTitle } = pageData;
+      const request = {
+        sheetSlug,
+        pageSlug: makePageSlug(pageTitle),
+      };
+      await fetch('/api/delete-one', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...request }),
+      })
+      .then((res) => {
+        if (res.ok) router.reload();
+      })
+    }
+  }, [router, pageData, sheetSlug]);
 
 
   const writeToRequest = (content=null, field=null, value=null, urlValue=null) => {
@@ -233,7 +248,6 @@ const EditorModal = ({ sheetSlug }) => {
       <DeleteModal
         show={showDeleteModal}
         requestHandler={requestHandler}
-        payload={pageData}
         onHide={() => setShowDeleteModal(false)}
       />
 
