@@ -9,6 +9,34 @@ import Col from 'react-bootstrap/Col';
 import { useRouter } from 'next/router'
 import { CF88Context } from '../context/CF88Context'
 
+const DeleteModal = (props) => {
+  return (
+    <Modal
+      {...props}
+      size="lg"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header closeButton>
+        <Modal.Title id="contained-modal-title-vcenter">
+          Aviso de exclusão
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <h4>Aviso</h4>
+        <p>
+          Os dados excluídos só poderão ser resgatados através de backup.
+          Se você ainda não fez, realize agora e só depois prossiga com a exclusão.
+        </p>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button type="button" variant="danger" onClick={props.onHide}>Deletar</Button>
+        <Button type="button" variant="secondary" onClick={props.onHide}>Cancelar</Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
+
 
 const EditorModal = ({ sheetSlug }) => {
   const [validated, setValidated] = useState(false);
@@ -21,6 +49,7 @@ const EditorModal = ({ sheetSlug }) => {
       } = useContext(CF88Context);
   const [pageData, setPageData] = useState({});
   const [formData, setFormData] = useState();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const router = useRouter();
   const inputRef = useRef([]);
@@ -194,49 +223,57 @@ const EditorModal = ({ sheetSlug }) => {
   }
 
   return (
-    <Modal
-      show={displayModal}
-      onHide={handleClose}
-      backdrop="static"
-      keyboard={false}
-    >
-      <Modal.Header closeButton>
-        <Modal.Title>Editar / Criar Entrada e Página</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form noValidate validated={validated} onSubmit={false} ref={formRef}>
-          {formData && formData.map(([[key, value, type]]) => {
-            return (
-              <Form.Row>
-                <Form.Group as={Col} md="12" controlId={`formBasic${key}`} >
-                  <Form.Label>{key === 'pageTitle' ? 'Título' : key}:</Form.Label>
-                  <Form.Control
-                    onChange={(e) => changeHandler(e)}
-                    ref={(ref) => inputRef.current.push(ref)}
-                    as={type === 'textarea' ? type : 'input'}
-                    name={key}
-                    type={type}
-                    row={type === 'textarea' ? 3 : 1}
-                    placeholder={key === 'pageTitle' ? 'Título' : key}
-                    defaultValue={value}
-                    required
-                    disabled={key === 'URL' ? true : false}
-                  />
-                  <Form.Control.Feedback>OK!</Form.Control.Feedback>
-                  <Form.Control.Feedback type="invalid">Campos não podem estar vazios</Form.Control.Feedback>
-                </Form.Group>
-              </Form.Row>
-            )
-          })}
-          <Form.Row>
-            <Button type="button" variant="secondary" onClick={handleClose}>
-              Close
-            </Button>
-            <Button variant="primary" onClick={handleSubmit}>Salvar</Button>
-          </Form.Row>
-        </Form>
-      </Modal.Body>
-    </Modal>
+    <>
+      <DeleteModal
+        show={showDeleteModal}
+        onHide={() => setShowDeleteModal(false)}
+      />
+
+      <Modal
+        show={displayModal}
+        onHide={handleClose}
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Editar / Criar Entrada e Página</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form noValidate validated={validated} ref={formRef}>
+            {formData && formData.map(([[key, value, type]]) => {
+              return (
+                <Form.Row>
+                  <Form.Group as={Col} md="12" controlId={`formBasic${key}`} >
+                    <Form.Label>{key === 'pageTitle' ? 'Título' : key}:</Form.Label>
+                    <Form.Control
+                      onChange={(e) => changeHandler(e)}
+                      ref={(ref) => inputRef.current.push(ref)}
+                      as={type === 'textarea' ? type : 'input'}
+                      name={key}
+                      type={type}
+                      row={type === 'textarea' ? 3 : 1}
+                      placeholder={key === 'pageTitle' ? 'Título' : key}
+                      defaultValue={value}
+                      required
+                      disabled={key === 'URL' ? true : false}
+                    />
+                    <Form.Control.Feedback>OK!</Form.Control.Feedback>
+                    <Form.Control.Feedback type="invalid">Campos não podem estar vazios</Form.Control.Feedback>
+                  </Form.Group>
+                </Form.Row>
+              )
+            })}
+            <Form.Row>
+              <Button type="button" variant="secondary" onClick={handleClose}>
+                Fechar
+              </Button> {' '}
+              <Button variant="primary" onClick={handleSubmit}>Salvar</Button> {' '}
+              <Button variant="danger" onClick={() => setShowDeleteModal(true)}>Excluir</Button>
+            </Form.Row>
+          </Form>
+        </Modal.Body>
+      </Modal>
+    </>
   )
 }
 
