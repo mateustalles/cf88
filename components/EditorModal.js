@@ -30,7 +30,13 @@ const DeleteModal = (props) => {
         </p>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="button" variant="danger" onClick={props.onHide}>Deletar</Button>
+        <Button
+          type="button"
+          variant="danger"
+          onClick={props.requestHandler(props.payload, 'delete-one')}
+        >
+          Deletar
+        </Button>
         <Button type="button" variant="secondary" onClick={props.onHide}>Cancelar</Button>
       </Modal.Footer>
     </Modal>
@@ -226,6 +232,8 @@ const EditorModal = ({ sheetSlug }) => {
     <>
       <DeleteModal
         show={showDeleteModal}
+        requestHandler={requestHandler}
+        payload={pageData}
         onHide={() => setShowDeleteModal(false)}
       />
 
