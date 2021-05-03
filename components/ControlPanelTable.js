@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import dynamic from 'next/dynamic'
 import { CF88Context } from '../context/CF88Context'
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
@@ -12,16 +12,19 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 
 const EditorModal = dynamic(() => import('./EditorModal'))
 
-const ControlPanelTable = ({ data, filter }) => {
+const ControlPanelTable = ({ data }) => {
   const [pages, setPages] = useState();
-  const { editionModal: [, setDisplayModal, , setModalItem, , setModalHeaders] } = useContext(CF88Context);
-  const [pagination, setPagination] = useState({ page: 1, size: 10 });
-
-  const paginationSetup = paginationFactory({
-    onPageChange: (num) => setPagination((data) => ({ ...data, page: num })),
-    onSizePerPageChange: (size) => setPagination((data) => ({ ...data, size: size })),
-  });
-
+  const { editionModal:
+          [
+            [, setDisplayModal],
+            [, setModalItem],
+            [, setModalHeaders],
+            [, setModalType]
+          ],
+          cpTable: [
+            filter,
+          ]
+    } = useContext(CF88Context);
 
   useEffect(() => {
     const filteredPages = filter && data.filter((page) => Object.keys(page)[0] === filter);
@@ -29,20 +32,21 @@ const ControlPanelTable = ({ data, filter }) => {
     return () => setPages(data);
   }, [filter, setPages, data]);
 
-  const setDataType = (data) => {
-    if (data.match(/^\d{2}\/\d{2}\/\d{4}$/g)) return { type: 'date', filterFunc: textFilter };
-    if (data.match(/^[\d]+$/g)) return { type: 'number', filterFunc: textFilter };
-    return { type: 'text', filterFunc: textFilter };
-  }
 
-  const modelHeaders = filter && pages && pages[0][filter] && pages[0][filter]['data'];
+  const modalHeaders = filter && pages && pages[0][filter] && pages[0][filter]['data'];
 
   const modalData = filter && pages && pages[0][filter] && pages.map((page) => page[filter]['data']);
 
   const pageData = filter && pages && modalData && Object.values(modalData)
     .map((page) => page.reduce((acc, prod) => Object.assign(acc, prod), {}))
 
-  const pageHeaders = filter && pages && modelHeaders && modelHeaders.map((page, index) => {
+  const setDataType = (data) => {
+    if (data.match(/^\d{2}\/\d{2}\/\d{4}$/g)) return { type: 'date', filterFunc: textFilter };
+    if (data.match(/^[\d]+$/g)) return { type: 'number', filterFunc: textFilter };
+    return { type: 'text', filterFunc: textFilter };
+  }
+
+  const pageHeaders = filter && pages && modalHeaders && modalHeaders.map((page, index) => {
     const item = Object.keys(page)[0];
     const sampleData = pageData[0][item];
     const dataType = setDataType(sampleData).type;
@@ -74,19 +78,17 @@ const ControlPanelTable = ({ data, filter }) => {
     onClick: (e, row) => {
       const { pageTitle } = row;
       const modalItem = modalData.filter((([{ pageTitle: title }]) => pageTitle === title ))[0]
+      setModalType('update');
       setModalItem(modalItem);
-      setModalHeaders(modelHeaders);
+      setModalHeaders(modalHeaders);
       setTimeout(() => setDisplayModal(true), 300);
     }
   };
-
-  const formRef = useRef();
 
   return (
     <>
       <EditorModal
         sheetSlug={filter}
-        ref={formRef}
       />
       {pageHeaders
       && pageData
@@ -101,7 +103,7 @@ const ControlPanelTable = ({ data, filter }) => {
           columns={pageHeaders}
           rowEvents={rowEvents}
           filter={filterFactory()}
-          pagination={paginationSetup}
+          pagination={paginationFactory()}
         />}
     </>
   )

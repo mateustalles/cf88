@@ -10,9 +10,15 @@ import { useRouter } from 'next/router'
 import { CF88Context } from '../context/CF88Context'
 
 
-const EditorModal = ({ sheetSlug, type='update' }) => {
+const EditorModal = ({ sheetSlug }) => {
   const [validated, setValidated] = useState(false);
-  const { editionModal: [displayModal, setDisplayModal, data, , headers] } = useContext(CF88Context);
+  const { editionModal: [
+          [displayModal, setDisplayModal],
+          [modalData],
+          [headers],
+          [type]
+        ]
+      } = useContext(CF88Context);
   const [pageData, setPageData] = useState({});
   const [formData, setFormData] = useState();
 
@@ -44,27 +50,35 @@ const EditorModal = ({ sheetSlug, type='update' }) => {
     return pageSlug;
   }
 
-  const generateFields = useCallback((action=type, targetObj) => {
-    const source = (action === 'blank' && headers) ? headers : data;
+  const generateFields = useCallback((targetObj) => {
+    const source = (type === 'blank' && headers) ? headers : modalData;
     return source && source.length > 0
     && source.map((set) => Object.entries(set).map(([key, value]) => {
-      Object.assign(targetObj, { [key]: action === 'blank' ? '' : value });
-      console.log(value);
-      if (value.length > 30) return [key, value, 'textarea'];
-      if (value.match(/^\d+\/\d+\/\d+$/gi)) {
-        let date = value.split('/');
+      const actualValue = type === 'blank' ? '' : value;
+      Object.assign(targetObj, { [key]: actualValue });
+      if (value.length > 30) return [key, actualValue, 'textarea'];
+      if (value.match(/^\d{1,4}[/-]+\d{1,2}[/-]+\d{1,4}$/g)) {
+        let date = value.replace(/[/-]+/g, ' ')
+        date = date.split(' ');
         if(date[0].length === 1) date[0] = '0' + date[0];
         if(date[1].length === 1) date[1] = '0' + date[1];
-        const newDate = [date[2], date[1], date[0]].join('-');
+        if(date[2].length === 1) date[2] = '0' + date[2];
+        let newDate;
+        if(date[0].length !== 4) {
+          newDate = [date[2], date[1], date[0]].join('-');
+        } else {
+          newDate = [date[0], date[1], date[2]].join('-');
+        }
+        newDate = type === 'blank' ? new Date() : newDate;
         return [key, newDate, 'date'];
       }
-      return [key, value, 'text'];
+      return [key, actualValue, 'textarea'];
     }));
-  }, [data, headers, type]);
+  }, [modalData, headers, type]);
 
   const handleClose = () => {
     const pageData = {};
-    generateFields('blank', pageData);
+    generateFields(pageData);
     setPageData(pageData);
     setDisplayModal(false)
   };
@@ -82,7 +96,6 @@ const EditorModal = ({ sheetSlug, type='update' }) => {
     if (form.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
-      form.checkValidity()
     } else {
       const sheetTitle = sheets.filter(([, slug]) => slug === sheetSlug)[0][0];
       const verbatimSlug = makeVerbatimSlug(Object.values(pageData)[1]);
@@ -117,15 +130,15 @@ const EditorModal = ({ sheetSlug, type='update' }) => {
 
   useEffect(() => {
     const content = {};
-    generateFields('update', content)
-    setFormData(generateFields('update', content));
-    router.prefetch('/admin/cp');
+    const data = generateFields(content)
+    setFormData(data);
     setPageData(content);
-  }, [generateFields, router]);
+    console.log(content);
+    router.prefetch('/admin/cp');
+  }, [generateFields, router, type]);
 
   const changeHandler = (e) => {
     const { target: { form, name, value } } = e;
-    console.log(form);
     const pageSlug = makePageSlug(form[0].value)
     inputRef.current[inputRef.current.length - 1].value = `https://www.cf88.com.br/stf/${sheetSlug}/${pageSlug}`;
     const urlValue = inputRef.current[inputRef.current.length - 1].value

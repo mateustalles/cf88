@@ -7,11 +7,19 @@ export default function CF88Provider({ children }) {
   const [displayModal, setDisplayModal] = useState(false);
   const [modalItem, setModalItem] = useState();
   const [modalHeaders, setModalHeaders] = useState();
+  const [modalType, setModalType] = useState('update');
+  const [sheet, setSheet] = useState('teses-sem-repercussao-geral')
 
   const store = {
     editionModal: [
-      displayModal, setDisplayModal, modalItem, setModalItem, modalHeaders, setModalHeaders,
+      [displayModal, setDisplayModal],
+      [modalItem, setModalItem],
+      [modalHeaders, setModalHeaders],
+      [modalType, setModalType],
     ],
+    cpTable: [
+      sheet, setSheet,
+    ]
   };
 
   return <CF88Context.Provider value={store}>{children}</CF88Context.Provider>;

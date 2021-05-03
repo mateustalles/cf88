@@ -1,12 +1,14 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { getAllPages } from '../../models/pagesModel';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Head from 'next/head';
 import dynamic from 'next/dynamic'
+import { CF88Context } from '../../context/CF88Context'
 
 const ControlPanelTable = dynamic(() => import('../../components/ControlPanelTable'))
 
@@ -18,13 +20,26 @@ const ControlPanel = ({ data }) => {
     ['SÚMULA STJ', 'sumula-stj'],
     ['SÚMULA STF', 'sumula-stf'],
   ];
-
-  const [filter, setFilter] = useState(sheets[0][1]);
+  const { editionModal:
+          [
+            [, setDisplayModal],
+            [, setModalItem],
+            [, setModalHeaders],
+            [, setModalType]
+          ],
+          cpTable: [ sheet, setSheet ] } = useContext(CF88Context);
 
   const filterHandler = (e) => {
     const { target: { value } } = e;
     const filter = sheets.filter(([filter]) => filter === value);
-    setFilter(filter[0][1]);
+    setSheet(filter[0][1]);
+  }
+
+  const buttonHandler = () => {
+    const modalHeaders = sheet && data && data[0][sheet] && data[0][sheet]['data'];
+    setModalType('blank');
+    setModalHeaders(modalHeaders);
+    setTimeout(() => setDisplayModal(true), 300);
   }
 
   return (
@@ -40,25 +55,34 @@ const ControlPanel = ({ data }) => {
         />
       </Head>
       <Row>
-        {/* <Col md={2}>
-        </Col> */}
-        <Col md={12}>
+        <Col lg={12}>
           <Row>
             <h1>Edição do banco de dados</h1>
           </Row>
           <Row>
-            <Form.Group controlId="sheet-selection">
-              <Form.Label>Planilha: </Form.Label>
-              <Form.Control as="select" onChange={(e) => filterHandler(e)}>
-                {sheets.map(([sheetTitle,]) => <option key={sheetTitle}>{sheetTitle}</option>)}
-              </Form.Control>
-              <Form.Text className="text-muted">
-                Escolha a planilha a ser editada
-              </Form.Text>
-            </Form.Group>
+            <Form lg={12}>
+              <Form.Row>
+                <Col lg={12}>
+                  <Form.Group controlId="sheet-selection">
+                    <Form.Label>Planilha: </Form.Label>
+                    <Form.Control as="select" onChange={(e) => filterHandler(e)}>
+                      {sheets.map(([sheetTitle,]) => <option key={sheetTitle}>{sheetTitle}</option>)}
+                    </Form.Control>
+                    <Form.Text className="text-muted">
+                      Escolha a planilha a ser editada
+                    </Form.Text>
+                  </Form.Group>
+                </Col>
+                <Col lg={12}>
+                  <Form.Group>
+                    <Button onClick={buttonHandler}variant="outline-primary">Criar novo</Button>
+                  </Form.Group>
+                </Col>
+              </Form.Row>
+            </Form>
           </Row>
           <Row>
-            <ControlPanelTable data={data} filter={filter}/>
+            <ControlPanelTable data={data} />
           </Row>
         </Col>
       </Row>

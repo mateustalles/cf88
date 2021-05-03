@@ -31,7 +31,7 @@ const insertPages = async (pages) => {
     });
 
   const updatedPages = await connection()
-    .then((db) => db.collection('pages').bulkWrite([...updateArray], { ordered: false })
+    .then((db) => db.collection('pages').bulkWrite([...updateArray], { ordered: true })
     .catch((err) => {
       throw Error(err);
     }));
@@ -101,7 +101,6 @@ const updateOne = async (page) => {
     }
   ));
 
-  // const matched = updateOne.matchedCount;
   return updateOne;
 }
 
