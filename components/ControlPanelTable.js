@@ -1,21 +1,18 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import Table from 'react-bootstrap/Table';
 import dynamic from 'next/dynamic'
 import { CF88Context } from '../context/CF88Context'
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
-import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
+import filterFactory, { textFilter, customFilter } from 'react-bootstrap-table2-filter';
 
 const EditorModal = dynamic(() => import('./EditorModal'))
 
 const ControlPanelTable = ({ data, filter }) => {
   const [pages, setPages] = useState();
   const { editionModal: [, setDisplayModal, , setModalItem, , setModalHeaders] } = useContext(CF88Context);
-  // const [editedItem, setEditedItem] = useState([]);
-
 
   useEffect(() => {
     const filteredPages = filter && data.filter((page) => Object.keys(page)[0] === filter);
@@ -23,24 +20,38 @@ const ControlPanelTable = ({ data, filter }) => {
     return () => setPages(data);
   }, [filter, setPages, data]);
 
+  const setDataType = (data) => {
+    if (data.match(/^\d{2}\/\d{2}\/\d{4}$/g)) return { type: 'date', filterFunc: textFilter };
+    if (data.match(/^[\d]+$/g)) return { type: 'number', filterFunc: textFilter };
+    return { type: 'text', filterFunc: textFilter };
+  }
+
   const modelHeaders = filter && pages && pages[0][filter] && pages[0][filter]['data'];
-  const pageHeaders = filter && pages && modelHeaders && modelHeaders.map((page, index) => index === 0
-            ? ({
-              dataField: 'pageTitle',
-              text: 'Título',
-              filter: textFilter()
-            })
-            : ({
-              dataField: Object.keys(page)[0],
-              text: Object.keys(page)[0],
-              style: Object.keys(page)[0] === 'URL' && { wordBreak: 'break-all'},
-              filter: textFilter()
-            })
-  );
 
   const modalData = filter && pages && pages[0][filter] && pages.map((page) => page[filter]['data']);
   const pageData = filter && pages && modalData && Object.values(modalData)
     .map((page) => page.reduce((acc, prod) => Object.assign(acc, prod), {}))
+
+  const pageHeaders = filter && pages && modelHeaders && modelHeaders.map((page, index) => {
+    const item = Object.keys(page)[0];
+    const sampleData = pageData[0][item];
+    const dataType = setDataType(sampleData).type;
+    console.log(dataType);
+    return index === 0
+      ? ({
+        dataField: 'pageTitle',
+        text: 'Título',
+        filter: textFilter(),
+        sort: true
+      })
+      : ({
+        dataField: index === 0 ? 'pageTitle' : item,
+        text: index === 0 ? 'Título' : item,
+        style: item === 'URL' && { wordBreak: 'break-all'},
+        filter: textFilter(),
+        sort: true,
+      })
+  });
 
   const rowEvents = {
     onClick: (e, row, rowIndex) => {
@@ -49,12 +60,6 @@ const ControlPanelTable = ({ data, filter }) => {
       setTimeout(() => setDisplayModal(true), 300);
     }
   };
-
-
-  // const handleShow = (index) => {
-  //   setEditedItem(pageData[index]);
-  //   setDisplayModal(true);
-  // }
 
   const formRef = useRef();
 
@@ -67,6 +72,7 @@ const ControlPanelTable = ({ data, filter }) => {
       {pageHeaders
       && pageData
       && <BootstrapTable
+          bootstrap4={true}
           striped
           bordered
           responsive
@@ -77,24 +83,6 @@ const ControlPanelTable = ({ data, filter }) => {
           rowEvents={rowEvents}
           filter={filterFactory()}
         />}
-      {/* <Table striped bordered hover>
-        <thead>
-          {pageHeaders && pageHeaders.map((page, index) => index === 0
-            ? <th>Título</th> : <th>{Object.keys(page)}</th>)}
-        </thead>
-        <tbody>
-            {pageData && Object.values(pageData).map((page, index) => (
-              <tr>
-                {page.map((obj) => Object.values(obj).map((value) => (
-                <td onClick={() => handleShow(index)}>
-                  {value}
-                </td>
-                )))}
-              </tr>
-              )
-            )}
-        </tbody>
-      </Table> */}
     </>
   )
 }
