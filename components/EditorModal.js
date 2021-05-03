@@ -33,7 +33,7 @@ const DeleteModal = (props) => {
         <Button
           type="button"
           variant="danger"
-          onClick={props.requestHandler(null, 'delete-one')}
+          onClick={() => props.requestHandler(null, 'delete-one')}
         >
           Deletar
         </Button>
@@ -54,6 +54,7 @@ const EditorModal = ({ sheetSlug }) => {
         ]
       } = useContext(CF88Context);
   const [pageData, setPageData] = useState({});
+  const [updatedPage, setUpdatedPage] = useState({});
   const [formData, setFormData] = useState();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -138,13 +139,15 @@ const EditorModal = ({ sheetSlug }) => {
       event.stopPropagation();
     } else {
       const sheetTitle = sheets.filter(([, slug]) => slug === sheetSlug)[0][0];
-      const verbatimSlug = makeVerbatimSlug(Object.values(pageData)[1]);
-      const { pageTitle, ...entries } = pageData;
+      const verbatimSlug = makeVerbatimSlug(Object.values(updatedPage)[1]);
+      const { pageTitle: toBeUpdated } = pageData;
+      const { pageTitle, ...entries } = updatedPage;
       const entriesObjects = Object.entries(entries).map(([key, value]) => ({ [key]: value }));
       const request = {
         sheetSlug,
         sheetTitle,
         verbatimSlug,
+        toBeUpdated: makePageSlug(toBeUpdated),
         pageSlug: makePageSlug(pageTitle),
         data: [{ pageTitle }, ...entriesObjects]
       };
@@ -167,7 +170,7 @@ const EditorModal = ({ sheetSlug }) => {
       })
     }
     if (action === 'delete-one') {
-      const { pageTitle } = pageData;
+      const { pageTitle } = updatedPage;
       const request = {
         sheetSlug,
         pageSlug: makePageSlug(pageTitle),
@@ -181,26 +184,9 @@ const EditorModal = ({ sheetSlug }) => {
         if (res.ok) router.reload();
       })
     }
-  }, [router, pageData, sheetSlug]);
+  }, [router, updatedPage, sheetSlug]);
 
-
-  const writeToRequest = (content=null, field=null, value=null, urlValue=null) => {
-    if(field && value && urlValue) {
-      let newValue = value;
-      if (value.match(/^\d{1,4}[/-]+\d{1,2}[/-]+\d{1,4}$/g)) {
-        let date = value.replace(/[/-]+/g, ' ')
-        date = date.split(' ');
-        if(date[0].length === 1) date[0] = '0' + date[0];
-        if(date[1].length === 1) date[1] = '0' + date[1];
-        if(date[2].length === 1) date[2] = '0' + date[2];
-        if(date[0].length !== 4) {
-          newValue = [date[0], date[1], date[2]].join('/');
-        } else {
-          newValue = [date[2], date[1], date[0]].join('/');
-        }
-      }
-      return setPageData((data) => ({ ...data, [field]: newValue, URL: urlValue }));
-    }
+  const writeToPage = (content=null) => {
     if(content) {
       const modifiedContent = content;
       Object.entries(content).forEach(([key, value]) => {
@@ -221,6 +207,27 @@ const EditorModal = ({ sheetSlug }) => {
         }
       })
       setPageData(modifiedContent);
+      setUpdatedPage(modifiedContent);
+    }
+  }
+
+
+  const writeToRequest = (field=null, value=null, urlValue=null) => {
+    if(field && value && urlValue) {
+      let newValue = value;
+      if (value.match(/^\d{1,4}[/-]+\d{1,2}[/-]+\d{1,4}$/g)) {
+        let date = value.replace(/[/-]+/g, ' ')
+        date = date.split(' ');
+        if(date[0].length === 1) date[0] = '0' + date[0];
+        if(date[1].length === 1) date[1] = '0' + date[1];
+        if(date[2].length === 1) date[2] = '0' + date[2];
+        if(date[0].length !== 4) {
+          newValue = [date[0], date[1], date[2]].join('/');
+        } else {
+          newValue = [date[2], date[1], date[0]].join('/');
+        }
+      }
+      return setUpdatedPage((data) => ({ ...data, [field]: newValue, URL: urlValue }));
     }
   }
 
@@ -229,7 +236,7 @@ const EditorModal = ({ sheetSlug }) => {
     const content = {};
     const data = generateFields(content)
     setFormData(data);
-    writeToRequest(content);
+    writeToPage(content);
     router.prefetch('/admin/cp');
   }, [generateFields, router, type]);
 
@@ -238,9 +245,8 @@ const EditorModal = ({ sheetSlug }) => {
     const { target: { form, name, value } } = e;
     const pageSlug = makePageSlug(form[0].value)
     inputRef.current[inputRef.current.length - 1].value = `https://www.cf88.com.br/stf/${sheetSlug}/${pageSlug}`;
-
     const urlValue = inputRef.current[inputRef.current.length - 1].value
-    writeToRequest(null, name, value, urlValue);
+    writeToRequest(name, value, urlValue);
   }
 
   return (

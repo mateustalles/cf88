@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const pagesModel = require('../../models/pagesModel');
 
 const updateOne = async (req, res) => {

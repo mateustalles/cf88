@@ -78,11 +78,11 @@ const getAllPages = async () => {
 }
 
 const updateOne = async (page) => {
-  const { sheetSlug, sheetTitle, pageSlug, verbatimSlug, data  } = page
+  const { sheetSlug, sheetTitle, pageSlug, toBeUpdated, verbatimSlug, data  } = page
   const updateOne = await connection()
     .then((db) => db.collection('pages').updateOne(
     {
-      [`${sheetSlug}.pageSlug`]: pageSlug,
+      [`${sheetSlug}.pageSlug`]: toBeUpdated,
     },
     {
       $set:
