@@ -31,7 +31,10 @@ const fetchData = async () => {
       verbatimSlug = verbatimSlug.replace(regex, '-');
       verbatimSlug = verbatimSlug.toLowerCase();
       row.shift();
-      const entryList = row.map((cel, index) => ({ [headers[index + 1]]: cel }));
+      const entryList = row.map((cel, index) => {
+        const filteredCel = cel.normalize('NFD').replace(/[\u0020\u00A0\u1680\u2000\u2001\t]/g, ' ')
+        return { [headers[index + 1]]: filteredCel }
+      });
       return {
         [sheetSlug]: {
         pageSlug,

@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
-import React, { useEffect, useState, useRef, forwardRef, useCallback, useContext } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useContext } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -10,7 +10,7 @@ import { useRouter } from 'next/router'
 import { CF88Context } from '../context/CF88Context'
 
 
-const EditorModal = forwardRef(({ sheetSlug, type='update' }, ref) => {
+const EditorModal = ({ sheetSlug, type='update' }) => {
   const [validated, setValidated] = useState(false);
   const { editionModal: [displayModal, setDisplayModal, data, , headers] } = useContext(CF88Context);
   const [pageData, setPageData] = useState({});
@@ -45,9 +45,11 @@ const EditorModal = forwardRef(({ sheetSlug, type='update' }, ref) => {
   }
 
   const generateFields = useCallback((action=type, targetObj) => {
-    const source = action === 'blank' && headers ? headers : data;
-    return  source && source.length > 0 && source.map((set) => Object.entries(set).map(([key, value]) => {
+    const source = (action === 'blank' && headers) ? headers : data;
+    return source && source.length > 0
+    && source.map((set) => Object.entries(set).map(([key, value]) => {
       Object.assign(targetObj, { [key]: action === 'blank' ? '' : value });
+      console.log(value);
       if (value.length > 30) return [key, value, 'textarea'];
       if (value.match(/^\d+\/\d+\/\d+$/gi)) {
         let date = value.split('/');
@@ -123,9 +125,11 @@ const EditorModal = forwardRef(({ sheetSlug, type='update' }, ref) => {
 
   const changeHandler = (e) => {
     const { target: { form, name, value } } = e;
+    console.log(form);
     const pageSlug = makePageSlug(form[0].value)
     inputRef.current[inputRef.current.length - 1].value = `https://www.cf88.com.br/stf/${sheetSlug}/${pageSlug}`;
-    setPageData((data) => ({ ...data, [name]: value }));
+    const urlValue = inputRef.current[inputRef.current.length - 1].value
+    setPageData((data) => ({ ...data, [name]: value, URL: urlValue }));
   }
 
   return (
@@ -173,6 +177,6 @@ const EditorModal = forwardRef(({ sheetSlug, type='update' }, ref) => {
       </Modal.Body>
     </Modal>
   )
-})
+}
 
 export default EditorModal;
