@@ -26,6 +26,7 @@ const EditorModal = ({ sheetSlug }) => {
   const inputRef = useRef([]);
   const formRef = useRef();
 
+
   const makeVerbatimSlug = (value) => {
     let verbatimSlug = value.replace(/(?:\\[rn]|[\r\n]+)+/g, "");
     verbatimSlug = verbatimSlug.trim().split(' ')
@@ -37,6 +38,7 @@ const EditorModal = ({ sheetSlug }) => {
     verbatimSlug = verbatimSlug.toLowerCase();
     return verbatimSlug;
   }
+
 
   const makePageSlug = (value) => {
     let pageSlug = value.toLowerCase();
@@ -50,13 +52,13 @@ const EditorModal = ({ sheetSlug }) => {
     return pageSlug;
   }
 
+
   const generateFields = useCallback((targetObj) => {
     const source = (type === 'blank' && headers) ? headers : modalData;
     return source && source.length > 0
     && source.map((set) => Object.entries(set).map(([key, value]) => {
       const actualValue = type === 'blank' ? '' : value;
       Object.assign(targetObj, { [key]: actualValue });
-      if (value.length > 30) return [key, actualValue, 'textarea'];
       if (value.match(/^\d{1,4}[/-]+\d{1,2}[/-]+\d{1,4}$/g)) {
         let date = value.replace(/[/-]+/g, ' ')
         date = date.split(' ');
@@ -76,12 +78,14 @@ const EditorModal = ({ sheetSlug }) => {
     }));
   }, [modalData, headers, type]);
 
+
   const handleClose = () => {
     const pageData = {};
     generateFields(pageData);
     setPageData(pageData);
     setDisplayModal(false)
   };
+
 
   const handleSubmit = async (event) => {
     const sheets = [
@@ -91,6 +95,7 @@ const EditorModal = ({ sheetSlug }) => {
       ['SÚMULA STJ', 'sumula-stj'],
       ['SÚMULA STF', 'sumula-stf'],
     ];
+
 
     const form = formRef.current;
     if (form.checkValidity() === false) {
@@ -114,6 +119,7 @@ const EditorModal = ({ sheetSlug }) => {
     }
   };
 
+
   const requestHandler = useCallback(async (payload, action='update-one') => {
     if (action === 'update-one') {
       await fetch('/api/update', {
@@ -128,21 +134,63 @@ const EditorModal = ({ sheetSlug }) => {
   }, [router]);
 
 
+  const writeToRequest = (content=null, field=null, value=null, urlValue=null) => {
+    if(field && value && urlValue) {
+      let newValue = value;
+      if (value.match(/^\d{1,4}[/-]+\d{1,2}[/-]+\d{1,4}$/g)) {
+        let date = value.replace(/[/-]+/g, ' ')
+        date = date.split(' ');
+        if(date[0].length === 1) date[0] = '0' + date[0];
+        if(date[1].length === 1) date[1] = '0' + date[1];
+        if(date[2].length === 1) date[2] = '0' + date[2];
+        if(date[0].length !== 4) {
+          newValue = [date[0], date[1], date[2]].join('/');
+        } else {
+          newValue = [date[2], date[1], date[0]].join('/');
+        }
+      }
+      return setPageData((data) => ({ ...data, [field]: newValue, URL: urlValue }));
+    }
+    if(content) {
+      const modifiedContent = content;
+      Object.entries(content).forEach(([key, value]) => {
+        if (value.match(/^\d{1,4}[/-]+\d{1,2}[/-]+\d{1,4}$/g)) {
+          let date = value.replace(/[/-]+/g, ' ')
+          date = date.split(' ');
+          if(date[0].length === 1) date[0] = '0' + date[0];
+          if(date[1].length === 1) date[1] = '0' + date[1];
+          if(date[2].length === 1) date[2] = '0' + date[2];
+          let newDate;
+          if(date[0].length !== 4) {
+            newDate = [date[0], date[1], date[2]].join('/');
+          } else {
+            newDate = [date[2], date[1], date[0]].join('/');
+          }
+          Object.assign(modifiedContent, { [key]: newDate })
+          return { [key]: newDate }
+        }
+      })
+      setPageData(modifiedContent);
+    }
+  }
+
+
   useEffect(() => {
     const content = {};
     const data = generateFields(content)
     setFormData(data);
-    setPageData(content);
-    console.log(content);
+    writeToRequest(content);
     router.prefetch('/admin/cp');
   }, [generateFields, router, type]);
+
 
   const changeHandler = (e) => {
     const { target: { form, name, value } } = e;
     const pageSlug = makePageSlug(form[0].value)
     inputRef.current[inputRef.current.length - 1].value = `https://www.cf88.com.br/stf/${sheetSlug}/${pageSlug}`;
+
     const urlValue = inputRef.current[inputRef.current.length - 1].value
-    setPageData((data) => ({ ...data, [name]: value, URL: urlValue }));
+    writeToRequest(null, name, value, urlValue);
   }
 
   return (
