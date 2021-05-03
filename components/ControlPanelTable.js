@@ -40,16 +40,16 @@ const ControlPanelTable = ({ data }) => {
   const pageData = filter && pages && modalData && Object.values(modalData)
     .map((page) => page.reduce((acc, prod) => Object.assign(acc, prod), {}))
 
-  const setDataType = (data) => {
-    if (data.match(/^\d{2}\/\d{2}\/\d{4}$/g)) return { type: 'date', filterFunc: textFilter };
-    if (data.match(/^[\d]+$/g)) return { type: 'number', filterFunc: textFilter };
-    return { type: 'text', filterFunc: textFilter };
-  }
+  // const setDataType = (data) => {
+  //   if (data.match(/^\d{2}\/\d{2}\/\d{4}$/g)) return { type: 'date', filterFunc: textFilter };
+  //   if (data.match(/^[\d]+$/g)) return { type: 'number', filterFunc: textFilter };
+  //   return { type: 'text', filterFunc: textFilter };
+  // }
 
   const pageHeaders = filter && pages && modalHeaders && modalHeaders.map((page, index) => {
     const item = Object.keys(page)[0];
-    const sampleData = pageData[0][item];
-    const dataType = setDataType(sampleData).type;
+    // const sampleData = pageData[0][item];
+    // const dataType = setDataType(sampleData).type;
     return index === 0
       ? ({
         dataField: 'pageTitle',

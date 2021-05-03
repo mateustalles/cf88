@@ -23,7 +23,7 @@ const ControlPanel = ({ data }) => {
   const { editionModal:
           [
             [, setDisplayModal],
-            [, setModalItem],
+            [,],
             [, setModalHeaders],
             [, setModalType]
           ],
