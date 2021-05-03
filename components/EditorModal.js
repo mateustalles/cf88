@@ -119,7 +119,7 @@ const EditorModal = ({ sheetSlug }) => {
     const pageData = {};
     generateFields(pageData);
     setPageData(pageData);
-    setDisplayModal(false)
+    setDisplayModal(false);
   };
 
 
@@ -149,7 +149,7 @@ const EditorModal = ({ sheetSlug }) => {
         verbatimSlug,
         toBeUpdated: makePageSlug(toBeUpdated),
         pageSlug: makePageSlug(pageTitle),
-        data: [{ pageTitle }, ...entriesObjects]
+        data: [{ pageTitle }, ...entriesObjects],
       };
       await requestHandler(request);
 
@@ -165,9 +165,9 @@ const EditorModal = ({ sheetSlug }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...payload }),
       })
-      .then((res) => {
-        if (res.ok) router.reload();
-      })
+        .then((res) => {
+          if (res.ok) router.reload();
+        });
     }
     if (action === 'delete-one') {
       const { pageTitle } = updatedPage;
@@ -180,9 +180,9 @@ const EditorModal = ({ sheetSlug }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...request }),
       })
-      .then((res) => {
-        if (res.ok) router.reload();
-      })
+        .then((res) => {
+          if (res.ok) router.reload();
+        });
     }
   }, [router, updatedPage, sheetSlug]);
 
@@ -202,8 +202,8 @@ const EditorModal = ({ sheetSlug }) => {
           } else {
             newDate = [date[2], date[1], date[0]].join('/');
           }
-          Object.assign(modifiedContent, { [key]: newDate })
-          return { [key]: newDate }
+          Object.assign(modifiedContent, { [key]: newDate });
+          return { [key]: newDate };
         }
       })
       setPageData(modifiedContent);
@@ -216,7 +216,7 @@ const EditorModal = ({ sheetSlug }) => {
     if(field && value && urlValue) {
       let newValue = value;
       if (value.match(/^\d{1,4}[/-]+\d{1,2}[/-]+\d{1,4}$/g)) {
-        let date = value.replace(/[/-]+/g, ' ')
+        let date = value.replace(/[/-]+/g, ' ');
         date = date.split(' ');
         if(date[0].length === 1) date[0] = '0' + date[0];
         if(date[1].length === 1) date[1] = '0' + date[1];
@@ -233,12 +233,14 @@ const EditorModal = ({ sheetSlug }) => {
 
 
   useEffect(() => {
-    const content = {};
-    const data = generateFields(content)
-    setFormData(data);
-    writeToPage(content);
-    router.prefetch('/admin/cp');
-  }, [generateFields, router, type]);
+    if(displayModal) {
+      const content = {};
+      const data = generateFields(content)
+      setFormData(data);
+      writeToPage(content);
+      router.prefetch('/admin/cp');
+    }
+  }, [generateFields, displayModal, router, type]);
 
 
   const changeHandler = (e) => {

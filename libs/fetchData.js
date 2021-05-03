@@ -33,14 +33,18 @@ const fetchData = async () => {
       row.shift();
       const entryList = row.map((cel, index) => {
         const filteredCel = cel.normalize('NFD').replace(/[\u0020\u00A0\u1680\u2000\u2001\t]/g, ' ')
-        return { [headers[index + 1]]: filteredCel }
+        return { [headers[index + 1]]: filteredCel };
       });
       return {
         [sheetSlug]: {
         pageSlug,
         verbatimSlug,
         sheetTitle,
-        data: [{ pageTitle }, ...entryList, { URL: `https://www.cf88.com.br/stf/${sheetSlug}/${pageSlug}` }],
+        data: [
+          { pageTitle },
+          ...entryList,
+          { URL: `https://www.cf88.com.br/stf/${sheetSlug}/${pageSlug}` },
+          ],
         }
       }
     });

@@ -23,7 +23,7 @@ const ControlPanelTable = ({ data }) => {
           ],
           cpTable: [
             filter,
-          ]
+          ],
     } = useContext(CF88Context);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ const ControlPanelTable = ({ data }) => {
   }, [filter, setPages, data]);
 
 
-  const modalHeaders = filter && pages && pages[0][filter] && pages[0][filter]['data'];
+  const modalHeaders = filter && pages && data.filter((entry) => entry[filter])[0][filter]['data'];
 
   const modalData = filter && pages && pages[0][filter] && pages.map((page) => page[filter]['data']);
 
@@ -71,13 +71,13 @@ const ControlPanelTable = ({ data }) => {
           className: 'title-filter',
           placeholder: item === 'pageTitle' ? 'Por sigla ou número' : `Filtrar ${item}`,
         }),
-      })
+      });
   });
 
   const rowEvents = {
     onClick: (e, row) => {
       const { pageTitle } = row;
-      const modalItem = modalData.filter((([{ pageTitle: title }]) => pageTitle === title ))[0]
+      const modalItem = modalData.filter((([{ pageTitle: title }]) => pageTitle === title ))[0];
       setModalType('update');
       setModalItem(modalItem);
       setModalHeaders(modalHeaders);
@@ -90,8 +90,8 @@ const ControlPanelTable = ({ data }) => {
       <EditorModal
         sheetSlug={filter}
       />
-      {pageHeaders
-      && pageData
+      {
+        pageHeaders && pageData
       && <BootstrapTable
           bootstrap4={true}
           striped
@@ -104,7 +104,8 @@ const ControlPanelTable = ({ data }) => {
           rowEvents={rowEvents}
           filter={filterFactory()}
           pagination={paginationFactory()}
-        />}
+        />
+      }
     </>
   )
 }

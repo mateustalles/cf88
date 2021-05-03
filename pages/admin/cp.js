@@ -36,7 +36,7 @@ const ControlPanel = ({ data }) => {
   }
 
   const buttonHandler = () => {
-    const modalHeaders = sheet && data && data[0][sheet] && data[0][sheet]['data'];
+    const modalHeaders = sheet && data && data.filter((entry) => entry[sheet])[0][sheet]['data'];
     setModalType('blank');
     setModalHeaders(modalHeaders);
     setTimeout(() => setDisplayModal(true), 300);
@@ -75,7 +75,7 @@ const ControlPanel = ({ data }) => {
                 </Col>
                 <Col lg={12}>
                   <Form.Group>
-                    <Button onClick={buttonHandler}variant="outline-primary">Criar novo</Button>
+                    <Button onClick={buttonHandler} variant="outline-primary">Criar novo</Button>
                   </Form.Group>
                 </Col>
               </Form.Row>
