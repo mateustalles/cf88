@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/hooks/*": ["hooks/*"],
+      "@/lib/*": ["lib/*"],
+      "@/db/*": ["db/*"],
+      "@/models/*": ["models/*"],
+      "@/components/*": ["components/*"],
+      "@/middlewares/*": ["middlewares/*"],
+      "@/context/*": ["context/*"]
+    }
+  }
+}

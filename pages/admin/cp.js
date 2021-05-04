@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
-import React, { useContext } from 'react';
-import { getAllPages } from '../../models/pagesModel';
+import React, { useContext, useEffect } from 'react';
+import { getAllPages } from '@/models/pagesModel';
+import { useRouter } from 'next/router';
+import { useCurrentUser } from '@/hooks/index';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -8,11 +10,19 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Head from 'next/head';
 import dynamic from 'next/dynamic'
-import { CF88Context } from '../../context/CF88Context'
+import { CF88Context } from '@/context/CF88Context'
 
-const ControlPanelTable = dynamic(() => import('../../components/ControlPanelTable'))
+const ControlPanelTable = dynamic(() => import('@/components/ControlPanelTable'))
+const Navbar = dynamic(() => import('@/components/Navbar'))
 
 const ControlPanel = ({ data }) => {
+  const router = useRouter();
+  const [user] = useCurrentUser();
+
+  useEffect(() => {
+    if (!user || user.role !== 'admin') return router.push('/login');
+  }, [user, router]);
+
   const sheets = [
     ['TESE SEM REPERCUSSÃO GERAL', 'teses-sem-repercussao-geral'],
     ['TESE COM REPERCUSSÃO GERAL', 'teses-com-repercussao-geral'],
@@ -56,6 +66,9 @@ const ControlPanel = ({ data }) => {
       </Head>
       <Row>
         <Col lg={12}>
+          <Row>
+            <Navbar />
+          </Row>
           <Row>
             <h1>Edição do banco de dados</h1>
           </Row>

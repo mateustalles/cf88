@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-const connection = require('./connection');
+import connection from './connection';
 
 const insertPages = async (pages) => {
   const updateArray = pages.map((page) => {

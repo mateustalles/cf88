@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const pagesModel = require('../../models/pagesModel');
-const { fetchData } = require('../../libs/fetchData');
+const { fetchData } = require('../../lib/fetchData');
 
 const updateSheets = async (req, res) => {
   const sheets = await fetchData();
