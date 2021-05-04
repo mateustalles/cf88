@@ -2,6 +2,7 @@
 import React, { useRouter } from 'next/router'
 import { findPage, getAllPages } from '../../../models/pagesModel';
 import '../../../styles/Verbatim.module.css'
+import Head from 'next/head';
 
 const Verbatim = ({ page }) => {
   const router = useRouter();
@@ -15,11 +16,17 @@ const Verbatim = ({ page }) => {
   const { sheetTitle } = page[sheet];
   const sheetData = page[sheet]['data'];
   const [{ pageTitle }, ...data ] = sheetData;
-
+  const pageData = Object.values(data);
+  console.log(Object.entries(pageData[0])[0][0]);
   return (
     <div className="verbatim">
+      <Head>
+        <title>{`${sheetTitle} - ${pageTitle}`}</title>
+        <link rel="icon" href="/favicon.ico" />
+        <meta name="description" content={Object.entries(pageData[0])[0][1]} />
+      </Head>
       <h1>{sheetTitle}: {pageTitle}</h1>
-      { Object.values(data).map((entry, index) => {
+      { pageData.map((entry, index) => {
         const [[title, value]] = Object.entries(entry);
         if (index === 0) return <h3 key="value">{value}</h3>;
         else if (index === data.length - 1) return;

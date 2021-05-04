@@ -1,14 +1,18 @@
-/* eslint-disable no-undef */
-const pagesModel = require('../../models/pagesModel');
+import nc from 'next-connect';
+import { deleteOne } from '@/db/index';
+import { all } from '@/middlewares/index';
 
-const updateOne = async (req, res) => {
+const handler = nc();
+handler.use(all);
+
+handler.delete(async (req, res) => {
   const { body } = req;
 
-  await pagesModel.deleteOne(body).
+  await deleteOne(req.db, body).
     then(() => res.status(200).send('Deletado.'))
     .catch((err) => {
       throw Error(err);
     });
-}
+});
 
-export default updateOne;
+export default handler;

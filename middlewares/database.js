@@ -14,7 +14,7 @@ export async function createIndexes(db) {
     db
       .collection('tokens')
       .createIndex({ expireAt: -1 }, { expireAfterSeconds: 0 }),
-    db.collection('posts').createIndex({ createdAt: -1 }),
+    db.collection('pages').createIndex({ createdAt: -1 }),
     db.collection('users').createIndex({ email: 1 }, { unique: true }),
   ]);
   indexesCreated = true;

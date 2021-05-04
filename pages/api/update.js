@@ -1,14 +1,19 @@
-/* eslint-disable no-undef */
-const pagesModel = require('../../models/pagesModel');
+import nc from 'next-connect';
+import { updateOne } from '@/db/index';
+import { all } from '@/middlewares/index';
 
-const updateOne = async (req, res) => {
+const handler = nc();
+handler.use(all);
+
+
+handler.post(async (req, res) => {
   const { body } = req;
 
-  await pagesModel.updateOne(body).
+  await updateOne(req.db, body).
     then(() => res.status(200).send('Atualizada'))
     .catch((err) => {
       throw Error(err);
     });
-}
+})
 
-export default updateOne;
+export default handler;

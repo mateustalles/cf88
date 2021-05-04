@@ -176,7 +176,7 @@ const EditorModal = ({ sheetSlug }) => {
         pageSlug: makePageSlug(pageTitle),
       };
       await fetch('/api/delete-one', {
-        method: 'POST',
+        method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...request }),
       })

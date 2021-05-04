@@ -7,8 +7,8 @@ export default function sessionMiddleware(req, res, next) {
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-    client: req.dbClient,
-    stringify: false,
-  }),
+      client: req.dbClient,
+      stringify: false,
+    }),
   })(req, res, next);
 }

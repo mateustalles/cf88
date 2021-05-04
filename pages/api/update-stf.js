@@ -1,15 +1,21 @@
-/* eslint-disable no-undef */
-const pagesModel = require('../../models/pagesModel');
-const { fetchData } = require('../../lib/fetchData');
+import nc from 'next-connect';
+import { insertPages } from '@/db/index';
+import { all } from '@/middlewares/index';
+import { fetchData } from '@/lib/index';
 
-const updateSheets = async (req, res) => {
+const handler = nc();
+handler.use(all);
+
+handler.get(async (req, res) => {
+  if (req.user?.role !== 'admin'){
+    res.status(403).end('Não autorizado')
+  }
   const sheets = await fetchData();
-  await pagesModel.insertPages(sheets)
-    .then(() => res.status(200).json(sheets))
+  await insertPages(req.db, sheets)
+    .then(() => res.status(200).json('Banco de dados atualizado com sucesso'))
     .catch((err) => {
       throw Error(err);
     });
-};
+});
 
-
-export default updateSheets;
+export default handler;

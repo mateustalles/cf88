@@ -1,11 +1,16 @@
-const pagesModel = require('../../models/pagesModel');
+import nc from 'next-connect';
+import { getAllPages } from '@/db/index';
+import { all } from '@/middlewares/index';
 
-const getAllPages = async (req, res) => {
-  await pagesModel.getAllPages().
+const handler = nc();
+handler.use(all);
+
+handler.get(async (req, res) => {
+  await getAllPages().
     then((data) => res.status(200).json(data))
     .catch((err) => {
       throw Error(err);
     });
-}
+})
 
-export default getAllPages;
+export default handler;
