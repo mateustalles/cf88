@@ -17,13 +17,13 @@ const Verbatim = ({ page }) => {
   const sheetData = page[sheet]['data'];
   const [{ pageTitle }, ...data ] = sheetData;
   const pageData = Object.values(data);
-  console.log(Object.entries(pageData[0])[0][0]);
+  const content = Object.entries(pageData[0])[0][1].replace(/\n/g, ' ');
   return (
     <div className="verbatim">
       <Head>
         <title>{`${sheetTitle} - ${pageTitle}`}</title>
         <link rel="icon" href="/favicon.ico" />
-        <meta name="description" content={Object.entries(pageData[0])[0][1]} />
+        <meta name="description" content={content} />
       </Head>
       <h1>{sheetTitle}: {pageTitle}</h1>
       { pageData.map((entry, index) => {
