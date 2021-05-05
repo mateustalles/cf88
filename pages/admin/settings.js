@@ -10,6 +10,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
 import Head from 'next/head';
 import dynamic from 'next/dynamic'
+import axios from 'axios';
 
 const ConfirmationModal = (props) => {
   return (
@@ -62,7 +63,7 @@ const Settings = () => {
 
   const requestHandler = async (action) => {
     if (action === 'original') {
-      await fetch(`/api/update-stf`, {
+      await axios(`/api/update-stf`, {
         method: 'GET',
       })
         .then((res) => {
@@ -72,11 +73,12 @@ const Settings = () => {
           throw new Error(err);
         });
     } else if (action === 'backup') {
-      await fetch(`/api/update-backup`, {
+      console.log('teste');
+      await axios(`/api/google-auth`, {
         method: 'GET',
       })
-        .then((res) => {
-          if (res.ok) router.reload();
+        .then(({ data }) => {
+          router.replace(data);
         })
         .catch((err) => {
           throw new Error(err);
@@ -150,6 +152,5 @@ const Settings = () => {
     </>
   )
 }
-
 
 export default Settings;

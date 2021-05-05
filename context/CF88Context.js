@@ -9,6 +9,7 @@ export default function CF88Provider({ children }) {
   const [modalHeaders, setModalHeaders] = useState();
   const [modalType, setModalType] = useState('update');
   const [sheet, setSheet] = useState('teses-sem-repercussao-geral')
+  const [oAuth2Token, setOAuth2Token] = useState({});
 
   const store = {
     editionModal: [
@@ -19,6 +20,9 @@ export default function CF88Provider({ children }) {
     ],
     cpTable: [
       sheet, setSheet,
+    ],
+    gOAuth2: [
+      oAuth2Token, setOAuth2Token,
     ]
   };
 
