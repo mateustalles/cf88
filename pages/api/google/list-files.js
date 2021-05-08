@@ -11,6 +11,7 @@ handler.post(async (req, res) => {
   await listFiles(body)
     .then((data) => res.send(200).json(data))
     .catch((err) => {
+      console.log(err.message)
       throw new Error(err);
     })
 });

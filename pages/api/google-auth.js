@@ -1,8 +1,7 @@
 
 import nc from 'next-connect';
-import { all } from '@/middlewares/index';
+import { listFiles } from '@/lib/index';
 import {google} from 'googleapis';
-import open from 'open';
 
 const keys = {
   "redirect_uris":["http://localhost:3000/oauth2callback", "https://www.cf88.com.br/oauth2callback"],
@@ -25,7 +24,7 @@ const oauth2Client = new google.auth.OAuth2(
 google.options({ auth: oauth2Client });
 
 const handler = nc();
-handler.use(all);
+// handler.use(all);
 
 handler.get(async (req, res) => {
   const authorizeUrl = await oauth2Client.generateAuthUrl({
@@ -34,6 +33,23 @@ handler.get(async (req, res) => {
   });
 
   res.status(200).json(authorizeUrl);
+})
+
+handler.post(async (req, res) => {
+  const { body: { code } } = req;
+  console.log(code);
+  const { tokens } = await oauth2Client.getToken(code)
+  oauth2Client.setCredentials(tokens)
+  oauth2Client.on('tokens', (tokens) => {
+    if (tokens.refresh_token) {
+      // store the refresh_token in my database!
+      console.log(tokens.refresh_token);
+    }
+    console.log(tokens.access_token);
+  });
+
+  const drive = google.drive('v3');
+  await listFiles(drive);
 })
 
 export default handler;

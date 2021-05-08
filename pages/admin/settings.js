@@ -73,7 +73,6 @@ const Settings = () => {
           throw new Error(err);
         });
     } else if (action === 'backup') {
-      console.log('teste');
       await axios(`/api/google-auth`, {
         method: 'GET',
       })
