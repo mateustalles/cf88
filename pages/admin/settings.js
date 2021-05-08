@@ -125,7 +125,7 @@ const Settings = () => {
           console.error(err.message)
         });
     } else if (action === 'backup') {
-      await axios.get(`/api/google-auth`)
+      await axios.get(`/api/google/google-auth`)
         .then(({ data }) => {
           router.replace(data);
         })

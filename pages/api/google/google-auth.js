@@ -1,7 +1,6 @@
 
 import nc from 'next-connect';
-import { listFiles } from '@/lib/index';
-import {google} from 'googleapis';
+import { google } from 'googleapis';
 
 const keys = {
   "redirect_uris":["http://localhost:3000/oauth2callback", "https://www.cf88.com.br/oauth2callback"],
@@ -24,7 +23,6 @@ const oauth2Client = new google.auth.OAuth2(
 google.options({ auth: oauth2Client });
 
 const handler = nc();
-// handler.use(all);
 
 handler.get(async (req, res) => {
   const authorizeUrl = await oauth2Client.generateAuthUrl({

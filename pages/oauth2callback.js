@@ -45,7 +45,7 @@ const OAuth2 = ({ code }) => {
 
   useEffect(() => {
     const fetchRequest = async() => {
-      await axios.post('/api/google-auth', {
+      await axios.post('/api/google/google-auth', {
         code: code,
       },{
         headers: {
