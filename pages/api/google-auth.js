@@ -48,8 +48,7 @@ handler.post(async (req, res) => {
     console.log(tokens.access_token);
   });
 
-  const drive = google.drive('v3');
-  await listFiles(drive);
+  res.status(200).send('Oauth2 Authenticated!');
 })
 
 export default handler;

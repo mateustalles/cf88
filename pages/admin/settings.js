@@ -6,13 +6,24 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
 import Head from 'next/head';
 import dynamic from 'next/dynamic'
 import axios from 'axios';
 
-const ConfirmationModal = (props) => {
+const RestoreModal = (props) => {
+  const [sheetId, setSheetId] = useState('');
+
+  const handleSubmit = () => {
+    if (sheetId === '') {
+      return
+    }
+
+    return props.requestHandler('restore', sheetId);
+  };
+
   return (
     <Modal
       {...props}
@@ -22,23 +33,66 @@ const ConfirmationModal = (props) => {
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          {props.title}
+          Restaurar backup
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <h4>Aviso</h4>
         <p>
-          Os dados excluídos só poderão ser resgatados através de backup.
-          Se você ainda não fez, realize agora e só depois prossiga com a exclusão.
+          Para realizar a restauração, é necessário inserir o ID do arquivo no Google Drive.
+        </p>
+        <Form>
+          <Form.Group controlId="formBasicEmail">
+            <Form.Label>ID do arquivo:</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Id do arquivo no Google Drive"
+              onChange={(e) => setSheetId(e.target.value)}
+              required
+            />
+          </Form.Group>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          type="button"
+          variant="danger"
+          onClick={handleSubmit}
+        >
+          Restaurar
+        </Button>
+        <Button type="button" variant="secondary" onClick={props.onHide}>Cancelar</Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
+
+const SaveBackupModal = (props) => {
+  return (
+    <Modal
+      {...props}
+      size="lg"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header closeButton>
+        <Modal.Title id="contained-modal-title-vcenter">
+          Salvar Backup
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <h4>Aviso</h4>
+        <p>
+          Deseja salvar o atual banco de dados em um arquivo XLSX (backup)?
         </p>
       </Modal.Body>
       <Modal.Footer>
         <Button
           type="button"
           variant="danger"
-          onClick={() => props.requestHandler(props.fetchType)}
+          onClick={() => props.requestHandler('backup')}
         >
-          Restaurar
+          Salvar
         </Button>
         <Button type="button" variant="secondary" onClick={props.onHide}>Cancelar</Button>
       </Modal.Footer>
@@ -49,10 +103,8 @@ const ConfirmationModal = (props) => {
 const Navbar = dynamic(() => import('@/components/Navbar'))
 
 const Settings = () => {
-  const [showModal, setShowModal] = useState(false);
-  const [modalTitle, setModalTitle] = useState('');
-  const [fetchType, setFetchType] = useState('original');
-
+  const [showBackupModal, setShowBackupModal] = useState(false);
+  const [showRestoreModal, setShowRestoreModal] = useState(false);
   const router = useRouter();
   const [user] = useCurrentUser();
 
@@ -61,21 +113,19 @@ const Settings = () => {
   }, [user, router]);
 
 
-  const requestHandler = async (action) => {
-    if (action === 'original') {
-      await axios(`/api/update-stf`, {
-        method: 'GET',
+  const requestHandler = async (action, sheetId='') => {
+    if (action === 'restore') {
+      await axios.post(`/api/update-stf`, {
+        sheetId
       })
-        .then((res) => {
-          if (res.ok) router.reload();
+        .then(() => {
+          router.reload();
         })
         .catch((err) => {
-          throw new Error(err);
+          console.error(err.message)
         });
     } else if (action === 'backup') {
-      await axios(`/api/google-auth`, {
-        method: 'GET',
-      })
+      await axios.get(`/api/google-auth`)
         .then(({ data }) => {
           router.replace(data);
         })
@@ -85,10 +135,8 @@ const Settings = () => {
     }
   }
 
-  const buttonHandler = (title, fetchType) => {
-    setFetchType(fetchType);
-    setModalTitle(title);
-    setShowModal(true);
+  const buttonHandler = (fetchType) => {
+    fetchType === 'restore' ? setShowRestoreModal(true) : setShowBackupModal(true);
   }
 
   return (
@@ -103,12 +151,17 @@ const Settings = () => {
           crossOrigin="anonymous"
         />
       </Head>
-      <ConfirmationModal
-        show={showModal}
+
+      <SaveBackupModal
+        show={showBackupModal}
         requestHandler={requestHandler}
-        onHide={() => setShowModal(false)}
-        title={modalTitle}
-        fetchType={fetchType}
+        onHide={() => setShowBackupModal(false)}
+      />
+
+      <RestoreModal
+        show={showRestoreModal}
+        requestHandler={requestHandler}
+        onHide={() => setShowRestoreModal(false)}
       />
 
       <Container fluid="lg">
@@ -119,29 +172,29 @@ const Settings = () => {
           <ListGroup.Item >
             <Row>
               <Col lg={8}>
-                Restaurar banco de dados a partir de tabela padrão:
+                Salvar banco de dados em XLSX (backup)
               </Col>
               <Col lg={4}>
                 <Button
                   variant="outline-dark"
                   type="button"
-                  onClick={() => buttonHandler('Restaurar dados do original', 'original')}
+                  onClick={() => buttonHandler('backup')}
                 >
-                  Restaurar Original
+                  Salvar Backup
                 </Button>
               </Col>
             </Row>
             <Row>
               <Col lg={8}>
-                Restaurar banco de dados a partir de tabela backup:
+                Restaurar banco de dados a partir de tabela:
               </Col>
               <Col lg={4}>
                 <Button
                   variant="outline-dark"
                   type="button"
-                  onClick={() => buttonHandler('Restaurar dados do backup', 'backup')}
+                  onClick={() => buttonHandler('restore')}
                 >
-                  Restaurar Backup
+                  Restaurar banco de dados
                 </Button>
               </Col>
             </Row>
