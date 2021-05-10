@@ -17,7 +17,7 @@ const scopes = ['https://www.googleapis.com/auth/drive'];
 const oauth2Client = new google.auth.OAuth2(
   keys.client_id,
   keys.client_secret,
-  keys.redirect_uris[0]
+  keys.redirect_uris[1]
 );
 
 google.options({ auth: oauth2Client });
