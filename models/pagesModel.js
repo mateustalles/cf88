@@ -60,6 +60,23 @@ const findPage = async (sheetSlug, pageSlug) => {
   return page;
 }
 
+const incrementViews = async (sheetSlug, pageSlug) => {
+  const page = await connection()
+    .then((db) => db.collection('pages').update(
+      {
+        [`${sheetSlug}.pageSlug`]: pageSlug,
+      },
+      {
+        $inc: { views: 1 }
+      }
+    ).then((data) => data )
+    .catch((err) => {
+      throw Error(err);
+    }));
+
+  return page;
+}
+
 const getAllPages = async () => {
   const pages = await connection().then((db) => db.collection('pages').find(
     {},
@@ -124,5 +141,6 @@ module.exports = {
   findPage,
   getAllPages,
   updateOne,
-  deleteOne
+  deleteOne,
+  incrementViews
 }
