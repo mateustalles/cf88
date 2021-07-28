@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Allow: /stf
+Disallow: /admin     # Desativa a indexação do conteúdo da pasta 'blog'
