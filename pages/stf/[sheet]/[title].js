@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router'
 import { findPage, getAllPages } from '@/models/pagesModel';
-import { createLead } from '@/models/leadsModel';
+// import { createLead } from '@/models/leadsModel';
 import '@/styles/Verbatim.module.css'
 import Head from 'next/head';
 import Modal from 'react-bootstrap/Modal';
@@ -131,8 +131,9 @@ const Verbatim = ({ page }) => {
   }
 
   const requestHandler = async (name, email) => {
-    await createLead(name, email)
-      .then(() => setDisplayConfirmation(true));
+    //useAPI
+    // await createLead(name, email)
+    //   .then(() => setDisplayConfirmation(true));
   }
 
   const { sheet } = router.query;
