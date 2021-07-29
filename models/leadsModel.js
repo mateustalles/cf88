@@ -1,9 +1,9 @@
 /* eslint-disable no-undef */
 import connection from './connection';
 
-const updateOne = async (lead) => {
+const createLead = async (lead) => {
   const { name, email  } = lead
-  const updateOne = await connection()
+  const newLead = await connection()
     .then((db) => db.collection('leads').updateOne(
     {
       email
@@ -20,18 +20,18 @@ const updateOne = async (lead) => {
     }
   ));
 
-  return updateOne;
+  return newLead;
 }
 
 const getLeads = async () => {
   const getLeadsListing = await connection()
-    .then((db) => db.collection('leads').find();
+    .then((db) => db.collection('leads').find());
 
   return getLeadsListing;
 }
 
 
 module.exports = {
-  updateOne,
+  createLead,
   getLeads
 }

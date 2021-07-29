@@ -137,3 +137,6 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+#db
+data

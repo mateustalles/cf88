@@ -32,7 +32,6 @@ const ControlPanelTable = ({ data }) => {
     return () => setPages(data);
   }, [filter, setPages, data]);
 
-
   const modalHeaders = filter && pages && data.filter((entry) => entry[filter])[0][filter]['data'];
 
   const modalData = filter && pages && pages[0][filter] && pages.map((page) => page[filter]['data']);
