@@ -2,7 +2,6 @@ import nc from 'next-connect';
 import { getAllPages } from '@/db/index';
 import { fetchXlsx, uploadFile } from '@/lib/index';
 import { all } from '@/middlewares/index';
-import { file } from 'googleapis/build/src/apis/file';
 
 const handler = nc();
 handler.use(all);

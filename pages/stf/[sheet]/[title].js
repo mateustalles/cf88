@@ -90,7 +90,7 @@ const LeadModal = (props) => {
             <Form.Label>Nome:</Form.Label>
             <Form.Control
               type="text"
-              placeholder="name"
+              placeholder="Nome"
               maxLength={120}
               onChange={(e) => setName(e.target.value)}
               required
@@ -121,9 +121,6 @@ const LeadModal = (props) => {
 const Verbatim = ({ page }) => {
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [displayConfirmation, setDisplayConfirmation] = useState(false);
-  
-  //now install mongo on ur machine
-  
 
   useEffect(() => setShowLeadModal(true), []);
 
@@ -175,7 +172,7 @@ const Verbatim = ({ page }) => {
             { pageData.map((entry, index) => {
               const [[title, value]] = Object.entries(entry);
               if (index === 0) return (
-                <Row>
+                <Row key={`${title}_${value}`}>
                   <h2 key="value">{value}</h2>
                 </Row>
               );

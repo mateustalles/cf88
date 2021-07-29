@@ -8,7 +8,8 @@
       "@/models/*": ["models/*"],
       "@/components/*": ["components/*"],
       "@/middlewares/*": ["middlewares/*"],
-      "@/context/*": ["context/*"]
+      "@/context/*": ["context/*"],
+      "@/styles/*": ["styles/*"]
     }
   }
 }
