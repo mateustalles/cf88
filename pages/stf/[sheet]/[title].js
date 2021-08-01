@@ -139,7 +139,20 @@ const Verbatim = ({ page }) => {
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [displayConfirmation, setDisplayConfirmation] = useState(false);
 
-  useEffect(() => setShowLeadModal(true), []);
+  useEffect(() => {
+    const incrementViews = async() => {
+      await axios({
+        method: 'POST',
+        url: 'http://localhost:3000/api/page/increment-views',
+        data: {
+          page
+        }
+      }).then((response) => console.log(response.data))
+      .catch((err) => console.error(err))
+    }
+    incrementViews()
+    setShowLeadModal(true)
+  }, [page]);
 
   const router = useRouter();
 
@@ -151,7 +164,7 @@ const Verbatim = ({ page }) => {
     //useAPI
     await axios({
       method: 'POST',
-      url: 'https://localhost:3000/api/user/add-new-lead',
+      url: 'http://localhost:3000/api/user/add-new-lead',
       data: {
         name, email
       }

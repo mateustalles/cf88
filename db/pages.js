@@ -118,3 +118,20 @@ export const deleteOne = async (db, page) => {
 
   return deleted;
 }
+
+export const incrementViews = async (db, page) => {
+  const { sheetSlug, pageSlug } = page;
+  const incrementView = await db.collection('pages').update(
+      {
+        [`${sheetSlug}.pageSlug`]: pageSlug,
+      },
+      {
+        $inc: { views: 1 }
+      }
+    ).then((data) => data )
+    .catch((err) => {
+      throw Error(err);
+    });
+
+  return incrementView;
+}
