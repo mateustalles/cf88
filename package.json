@@ -5,13 +5,18 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "startdb": "pm2 start \"mongod --auth --dbpath ./data/db\" --name mongod"
   },
   "dependencies": {
+    "@zeit/next-css": "^1.0.1",
+    "@zeit/next-less": "^1.0.1",
+    "@zeit/next-sass": "^1.0.1",
     "aws4": "^1.11.0",
     "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^4.6.0",
+    "bootswatch": "^5.0.2",
     "connect-mongo": "^4.4.1",
     "dgram": "^1.0.1",
     "dns": "^0.2.2",
@@ -27,9 +32,11 @@
     "nanoid": "^3.1.22",
     "next": "10.1.3",
     "next-connect": "^0.10.1",
+    "next-images": "^1.8.1",
     "next-session": "^3.4.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
+    "pm2": "^5.1.0",
     "querystring": "^0.2.1",
     "react": "17.0.2",
     "react-bootstrap": "^1.5.2",

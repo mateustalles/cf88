@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router'
 import { findPage, getAllPages } from '@/models/pagesModel';
-// import { createLead } from '@/models/leadsModel';
+import axios from 'axios';
 import '@/styles/Verbatim.module.css'
 import Head from 'next/head';
 import Modal from 'react-bootstrap/Modal';
@@ -46,12 +46,19 @@ const ConfirmationToast = (props) => {
 const LeadModal = (props) => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [isDone, setIsDone] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     if (email === '' || name === '') {
       return
     }
-    return props.requestHandler(name, email);
+    props.requestHandler(name, email)
+      .then(() => setIsDone(true));
+    
+    setTimeout(() => {
+      props.setShowLeadModal(false)
+    }, 1500)
   };
 
   return (
@@ -61,59 +68,69 @@ const LeadModal = (props) => {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          Bem vindo à Literalidades da CF-88!
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <h4>Quem somos?</h4>
-        <p>
-          {`Nosso intuito é ser a referência para você no estudo da Constituição Federal de 1988 para concursos!
-          Que receber nossas novidades quando novos artigos forem adicionados, ganhar descontos e acesso exclusivos
-          e aprimorar seus estudos online? 
+      {isDone 
+      ? <div>
+          <Modal.Body>
+            <h1>Obrigado</h1>
+          </Modal.Body>
+        </div>
+      :
+      <div>
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Bem vindo à Literalidades da CF-88!
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h4>Quem somos?</h4>
+          <p>
+            {`Nosso intuito é ser a referência para você no estudo da Constituição Federal de 1988 para concursos!
+            Que receber nossas novidades quando novos artigos forem adicionados, ganhar descontos e acesso exclusivos
+            e aprimorar seus estudos online? 
 
-          Então cadastre seu e-mail e senha logo abaixo!
-          `}
-        </p>
-        <Form>
-          <Form.Group controlId="formBasicEmail">
-            <Form.Label>Email:</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Email"
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formBasicEmail">
-            <Form.Label>Nome:</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Nome"
-              maxLength={120}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </Form.Group>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button
-          type="button"
-          variant="primary"
-          onClick={handleSubmit}
-        >
-          Enviar
-        </Button>
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={props.onHide}
-        >
-          Cancelar
-        </Button>
-      </Modal.Footer>
+            Então cadastre seu e-mail e senha logo abaixo!
+            `}
+          </p>
+          <Form>
+            <Form.Group controlId="formBasicEmail">
+              <Form.Label>Nome:</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Nome"
+                maxLength={120}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formBasicEmail">
+              <Form.Label>Email:</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Email"
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            type="button"
+            variant="primary"
+            onClick={handleSubmit}
+          >
+            Enviar
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={props.onHide}
+          >
+            Cancelar
+          </Button>
+        </Modal.Footer>
+      </div>
+    }
     </Modal>
   )
 };
@@ -132,8 +149,14 @@ const Verbatim = ({ page }) => {
 
   const requestHandler = async (name, email) => {
     //useAPI
-    // await createLead(name, email)
-    //   .then(() => setDisplayConfirmation(true));
+    await axios({
+      method: 'POST',
+      url: 'https://localhost:3000/api/user/add-new-lead',
+      data: {
+        name, email
+      }
+    }).then((response) => console.log(response.data))
+    .catch((err) => console.error(err))
   }
 
   const { sheet } = router.query;
@@ -162,6 +185,7 @@ const Verbatim = ({ page }) => {
         <LeadModal
           show={showLeadModal}
           requestHandler={requestHandler}
+          setShowLeadModal={setShowLeadModal}
           onHide={() => setShowLeadModal(false)}
         />
       <Container className="verbatim">

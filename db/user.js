@@ -39,3 +39,30 @@ export async function insertUser(db, {
     })
     .then(({ ops }) => ops[0]);
 }
+export const createLead = async (db, lead) => {
+  const { name, email  } = lead;
+  const newLead = await db.collection('leads').updateOne(
+    {
+      email
+    },
+    {
+      $set:
+        {
+          name,
+          email
+        }
+    },
+    {
+      upsert : true,
+    }
+  ).then((data) => data)
+  .catch((err) => console.error(err));
+
+  return newLead;
+}
+
+export const getLeads = async (db) => {
+  const getLeadsListing = await db.collection('leads').find();
+
+  return getLeadsListing;
+}
