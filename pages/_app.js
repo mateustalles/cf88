@@ -1,7 +1,5 @@
 import React from 'react';
-import '../styles/globals.css'
 import "bootswatch/dist/minty/bootstrap.min.css";
-
 import App from 'next/app';
 import CF88Provider from '../context/CF88Context';
 

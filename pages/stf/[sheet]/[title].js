@@ -12,6 +12,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Toast from 'react-bootstrap/Toast';
+import styled from 'styled-components';
 
 const ConfirmationToast = (props) => {
   const [show, setShow] = useState(false);
@@ -135,6 +136,9 @@ const LeadModal = (props) => {
   )
 };
 
+const StyledRow = styled.div`
+  background-color: rgba(0, 128, 0, 0.3);
+`
 const Verbatim = ({ page }) => {
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [displayConfirmation, setDisplayConfirmation] = useState(false);
@@ -182,7 +186,6 @@ const Verbatim = ({ page }) => {
   return (
       <>
         <Head>
-          <title>{`${sheetTitle} - ${pageTitle}`}</title>
           <link rel="icon" href="/favicon.ico" />
           <link
             rel="stylesheet"
@@ -202,6 +205,7 @@ const Verbatim = ({ page }) => {
           onHide={() => setShowLeadModal(false)}
         />
       <Container className="verbatim">
+          <StyledRow>{`${sheetTitle} - ${pageTitle}`}</StyledRow>
         <Row>
           <h1>{sheetTitle}: {pageTitle}</h1>
         </Row>
