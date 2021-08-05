@@ -18,3 +18,13 @@ MONGODB_URI=mongodb://localhost:27017 {OU OUTRA URI LOCAL COM AUTENTICAÇÂO DEF
 DB_NAME=nome-do-banco-de-dados
 PORT=3000
 SESSION_SECRET={SESSION SECRET DO MONGODB}
+
+
+Color pallete
+https://www.color-hex.com/color-palette/45297
+Hex	RGB
+#65f473	(101,244,115)
+#5fe76c	(95,231,108)
+#59da66	(89,218,102)
+#53cd5f	(83,205,95)
+#4dc058	(77,192,88)

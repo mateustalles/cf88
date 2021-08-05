@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 export const CF88Context = createContext();
 
 export default function CF88Provider({ children }) {
+    const [pageRefs, setPageRefs] = useState({});
   const [displayModal, setDisplayModal] = useState(false);
   const [modalItem, setModalItem] = useState();
   const [modalHeaders, setModalHeaders] = useState();
@@ -12,6 +13,7 @@ export default function CF88Provider({ children }) {
   const [oAuth2Token, setOAuth2Token] = useState({});
 
   const store = {
+    pageRefs:  [pageRefs, setPageRefs],
     editionModal: [
       [displayModal, setDisplayModal],
       [modalItem, setModalItem],

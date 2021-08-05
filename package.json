@@ -9,6 +9,7 @@
     "startdb": "pm2 start \"mongod --auth --dbpath ./data/db\" --name mongod"
   },
   "dependencies": {
+    "@n8tb1t/use-scroll-position": "^2.0.3",
     "@zeit/next-css": "^1.0.1",
     "@zeit/next-less": "^1.0.1",
     "@zeit/next-sass": "^1.0.1",
