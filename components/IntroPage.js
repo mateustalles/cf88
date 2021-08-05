@@ -8,8 +8,17 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 
 const IntroPageContainer = styled(GenericPage)`
+  * {
+    margin: 0;
+    padding: 0;
+  }
+  &#intro {
+    height: 100vh;
+    width: 100vw;
+    background-color: blue;
+    background-image: linear-gradient(10deg, lightblue 50%, transparent 50%), linear-gradient(-60deg, brown 30%, transparent 30%);
+  }
   justify-content: center;
-  position: relative;
 `
 
 export default function CarouselPage() {

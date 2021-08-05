@@ -10,12 +10,12 @@ const GenericPage = styled.div`
   display: flex;
   box-sizing: border-box;
   flex-flow: column nowrap;
-  min-height: ${(props) => `${props.windowHeight}px`};
-  max-height: ${(props) => `${props.windowHeight}px`};
-  justify-content: space-between;
-  padding: 20px 0;
-  margin: 0;
+  min-height: 100vh;
+  max-height: 100vh;
   width: 100vw;
+  justify-content: space-between;
+  padding: 0;
+  margin: 0;
   overflow: hidden;
 
   p {
