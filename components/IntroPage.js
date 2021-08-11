@@ -6,22 +6,31 @@ import styled from 'styled-components';
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import Table from 'react-bootstrap/Table'
+import Image from 'next/image'
+import Link from 'next/link'
+import introBackground from '../images/cf88-background.png'
+import TopMenu from './TopMenu'
+import MostViewedTableModal from '../components/MostViewedTableModal'
 
 const IntroPageContainer = styled(GenericPage)`
-  * {
-    margin: 0;
-    padding: 0;
-  }
-  &#intro {
-    height: 100vh;
-    width: 100vw;
-    background-color: blue;
-    background-image: linear-gradient(10deg, lightblue 50%, transparent 50%), linear-gradient(-60deg, brown 30%, transparent 30%);
-  }
-  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  justify-content: space-between;
+  position: relative;
 `
 
-export default function CarouselPage() {
+const MostViewedTableContainer = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 25px;
+  border: 2px solid black;
+  overflow-y: scroll;
+`
+
+export default function IntroPage({ mostViewed }) {
   const { pageRefs: [, setPageRefs] } = useContext(CF88Context)
 
   const [, windowHeight] = useWindowSize();
@@ -38,26 +47,26 @@ export default function CarouselPage() {
     });
   }, [setPageRefs]);
 
+  console.log(mostViewed)
+
   return (
     <IntroPageContainer
       ref={introRef}
       windowHeight={windowHeight}
       id="intro"
     >
+      {/* <Image
+        src={introBackground}
+        layout="fill"
+        objectFit="cover"
+        objectPosition="50% 50%"
+        z-index={1000}
+      /> */}
+      <TopMenu />
       <Container>
-        <Row>
-          <Col>
-            <h1>Logo</h1>
-          </Col>
-          <Col>
-            <h1>Literalidades</h1>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <h1>Seja bem-vindo!!</h1>
-          </Col>
-        </Row>
+        <MostViewedTableContainer>
+            <MostViewedTableModal mostViewed={mostViewed} />
+        </MostViewedTableContainer>
       </Container>
     </IntroPageContainer>
   )

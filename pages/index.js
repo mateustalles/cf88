@@ -3,11 +3,25 @@ import usePageTracker from '../hooks/usePageTracker';
 import React from 'react';
 import IntroPage from '../components/IntroPage'
 import ContentPage from '../components/ContentPage'
+import styled from 'styled-components';
+import { get10MostViewed } from '@/models/pagesModel';
 
-export default function Home() {
+const MainDiv = styled.div`
+  // display: flex;
+  margin: 0;
+  padding: 0;
+  min-width: 100%;
+  min-height: 100%;
+  flex: row nowrap;
+  justify-content: space-around;
+  align-items: flex-start;
+  overflow: hidden;
+`
+
+export default function Home({ mostViewed }) {
   usePageTracker()
   return (
-    <div className="container">
+    <MainDiv>
       <Head>
         <title>CF88 - Literalidades da Constituição Brasileira</title>
         <link rel="icon" href="/favicon.ico" />
@@ -18,8 +32,18 @@ export default function Home() {
           crossOrigin="anonymous"
         />
       </Head>
-      <IntroPage />
+      <IntroPage mostViewed={mostViewed}/>
       <ContentPage />
-    </div>
+    </MainDiv>
   )
+}
+export async function getStaticProps(context) {
+  const mostViewed = await get10MostViewed();
+
+  return {
+    props: {
+      mostViewed,
+    },
+    revalidate: 1,
+  }
 }

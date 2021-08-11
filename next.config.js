@@ -1,5 +1,12 @@
-module.exports = {
+const withImages = require('next-images')
+
+
+module.exports = withImages({
   webpack: (config, { isServer }) => {
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack', 'url-loader']
+    });
     // Fixes npm packages that depend on `fs` module
     if (!isServer) {
       config.node = {
@@ -10,5 +17,5 @@ module.exports = {
     }
 
     return config
-  }
-}
+  },
+})

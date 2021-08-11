@@ -62,7 +62,7 @@ const findPage = async (sheetSlug, pageSlug) => {
 
 const incrementViews = async (sheetSlug, pageSlug) => {
   const page = await connection()
-    .then((db) => db.collection('pages').update(
+    .then((db) => db.collection('pages').updateOne(
       {
         [`${sheetSlug}.pageSlug`]: pageSlug,
       },
@@ -136,11 +136,28 @@ const deleteOne = async (page) => {
   return deleted;
 }
 
+const get10MostViewed = async () => {
+  const data = await connection()
+    .then((db) => db.collection('pages')
+      .aggregate([
+        { $sort: { views: -1, _id: 1 } },
+        { $limit: 10 },
+        { $project: { _id: 0 }}
+      ])
+      .toArray()
+      .catch((err) => {
+        throw Error(err);
+      }))
+  console.log(data)
+  return data
+}
+
 module.exports = {
   insertPages,
   findPage,
   getAllPages,
   updateOne,
   deleteOne,
-  incrementViews
+  incrementViews,
+  get10MostViewed
 }

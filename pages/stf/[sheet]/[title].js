@@ -139,24 +139,25 @@ const LeadModal = (props) => {
 const StyledRow = styled.div`
   background-color: rgba(0, 128, 0, 0.3);
 `
-const Verbatim = ({ page }) => {
+const Verbatim = ({ page, pageRef }) => {
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [displayConfirmation, setDisplayConfirmation] = useState(false);
 
   useEffect(() => {
+    const { sheetSlug, pageSlug } = pageRef
     const incrementViews = async() => {
       await axios({
         method: 'POST',
         url: 'http://localhost:3000/api/page/increment-views',
         data: {
-          page
+          sheetSlug, pageSlug
         }
       }).then((response) => console.log(response.data))
       .catch((err) => console.error(err))
     }
     incrementViews()
     setShowLeadModal(true)
-  }, [page]);
+  }, [pageRef]);
 
   const router = useRouter();
 
@@ -255,6 +256,10 @@ export async function getStaticProps(context) {
   return {
     props: {
       page,
+      pageRef: {
+        sheetSlug: sheet,
+        pageSlug: title
+      }
     },
     revalidate: 1,
   }
