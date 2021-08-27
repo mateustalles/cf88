@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "startdb": "pm2 start \"mongod --auth --dbpath ./data/db\" --name mongod"
+    "startdb": "pm2 start \"mongod --auth --dbpath ./home/wwcf88/data/db\" --name mongod"
   },
   "dependencies": {
     "@n8tb1t/use-scroll-position": "^2.0.3",
