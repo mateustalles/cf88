@@ -9,7 +9,6 @@ handler.get(async (req, res) => {
   await listFiles()
     .then((data) => res.send(200).json(data))
     .catch((err) => {
-      console.log(err.message)
       throw new Error(err);
     })
 });

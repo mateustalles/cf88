@@ -1,6 +1,5 @@
-import React, { useRef, useEffect, useContext } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import Table from 'react-bootstrap/Table'
 import Link from 'next/link'
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
@@ -12,6 +11,10 @@ const MostViewedTableStyled = styled.div`
   max-width: 60vw;
   min-height: 75vh;
   max-height: 75vh;
+  
+  table * {
+    color: white;
+  }
 `
 
 export default function MostViewedTableModal({ mostViewed }) {
@@ -31,7 +34,6 @@ export default function MostViewedTableModal({ mostViewed }) {
     const correspondentTitle = sheetList[sheetTitle]
     const thesis = data.find((item) => item[correspondentTitle])[correspondentTitle]
     const url = data.find((item) => item['URL'])['URL']
-    console.log(thesis)
     return {
       id: index + 1,
       verbatim: <Link href={url}>{`${sheetTitle} ${pageTitle} - ${thesis}`}</Link>,
@@ -41,7 +43,7 @@ export default function MostViewedTableModal({ mostViewed }) {
 
   const columns = [
     { dataField: 'id', text: '#'},
-    { dataField: 'verbatim', text: 'Verbete'},
+    { dataField: 'verbatim', text: 'Verbete', headerStyle: { width: '80%' } },
     { dataField: 'views', text: 'Visitas'}
   ]
 

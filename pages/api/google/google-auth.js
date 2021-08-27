@@ -35,7 +35,6 @@ handler.get(async (req, res) => {
 
 handler.post(async (req, res) => {
   const { body: { code } } = req;
-  console.log(code);
   const { tokens } = await oauth2Client.getToken(code)
   oauth2Client.setCredentials(tokens)
   oauth2Client.on('tokens', (tokens) => {

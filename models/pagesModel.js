@@ -148,7 +148,6 @@ const get10MostViewed = async () => {
       .catch((err) => {
         throw Error(err);
       }))
-  console.log(data)
   return data
 }
 
