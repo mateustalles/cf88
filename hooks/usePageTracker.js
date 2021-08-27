@@ -14,7 +14,7 @@ const usePageTracker = () => {
   const scrollAction = useRef('scrollNext');
 
   const orderedRefs = useMemo(() => {
-    return ['introRef', 'contentRef']
+    return ['introRef', 'contentRef', 'aboutUsRef']
   }, []);
 
   useScrollPosition(({ prevPos, currPos }) => {

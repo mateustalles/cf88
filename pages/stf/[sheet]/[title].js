@@ -34,7 +34,6 @@ const ConfirmationToast = (props) => {
               alt=""
             />
             <strong className="me-auto">Pronto!</strong>
-            {/* <small>11 mins ago</small> */}
           </Toast.Header>
           <Toast.Body>Seu contato está salvo!</Toast.Body>
         </Toast>

@@ -3,6 +3,7 @@ import usePageTracker from '../hooks/usePageTracker';
 import React from 'react';
 import IntroPage from '../components/IntroPage'
 import ContentPage from '../components/ContentPage'
+import AboutUsPage from '../components/AboutUsPage'
 import styled from 'styled-components';
 import { get10MostViewed } from '@/models/pagesModel';
 
@@ -34,6 +35,7 @@ export default function Home({ mostViewed }) {
       </Head>
       <IntroPage mostViewed={mostViewed}/>
       <ContentPage />
+      <AboutUsPage />
     </MainDiv>
   )
 }
