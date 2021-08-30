@@ -62,7 +62,16 @@ export const createLead = async (db, lead) => {
 }
 
 export const getLeads = async (db) => {
-  const getLeadsListing = await db.collection('leads').find();
+  const getLeadsListing = await db.collection('leads')
+      .aggregate([
+        { $sort: { views: -1, _id: 1 } },
+        { $project: { _id: 0 }}
+      ])
+      .toArray()
+      .then((data) => data)
+      .catch((err) => {
+        throw Error(err);
+      })
 
   return getLeadsListing;
 }

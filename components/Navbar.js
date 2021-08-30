@@ -32,6 +32,7 @@ const Navbar = () => {
   return (
     <Container>
       {customButton(handleClick, 'Painel de controle', '/admin/cp', router.pathname)}{' '}
+      {customButton(handleClick, 'Leads', '/admin/leads', router.pathname)}{' '}
       {customButton(handleClick, 'Configurações', '/admin/settings', router.pathname)}{' '}
       <Button variant="outline-dark" onClick={handleLogout}>Sair</Button>{' '}
     </Container>

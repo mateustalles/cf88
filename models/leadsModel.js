@@ -24,10 +24,17 @@ const createLead = async (lead) => {
 }
 
 const getLeads = async () => {
-  const getLeadsListing = await connection()
-    .then((db) => db.collection('leads').find());
-
-  return getLeadsListing;
+  const data = await connection()
+    .then((db) => db.collection('leads')
+      .aggregate([
+        { $sort: { name: 1 } },
+        { $project: { _id: 0 }}
+      ])
+      .toArray()
+      .catch((err) => {
+        throw Error(err);
+      }))
+  return data
 }
 
 
