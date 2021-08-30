@@ -147,7 +147,7 @@ const Verbatim = ({ page, pageRef }) => {
     const incrementViews = async() => {
       await axios({
         method: 'POST',
-        url: 'api/page/increment-views',
+        url: '/api/page/increment-views',
         data: {
           sheetSlug, pageSlug
         }
