@@ -44,7 +44,7 @@ export default function ContentPage() {
     e.preventDefault();
     await axios({
       method: 'POST',
-      url: 'http://localhost:3000/api/contact/send-message',
+      url: '/api/contact/send-message',
       data: {
         name, email, message
       }
