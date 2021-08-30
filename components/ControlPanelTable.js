@@ -39,9 +39,9 @@ const ControlPanelTable = ({ data }) => {
   const pageData = filter && pages && modalData && Object.values(modalData)
     .map((page) => page.reduce((acc, prod) => Object.assign(acc, prod), {}))
 
-
   const pageHeaders = filter && pages && modalHeaders && modalHeaders.map((page, index) => {
     const item = Object.keys(page)[0];
+    console.log(item)
 
     return index === 0
       ? ({

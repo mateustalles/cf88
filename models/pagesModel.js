@@ -67,7 +67,7 @@ const incrementViews = async (sheetSlug, pageSlug) => {
         [`${sheetSlug}.pageSlug`]: pageSlug,
       },
       {
-        $inc: { views: 1 }
+        $inc: { data: { views: 1 } }
       }
     ).then((data) => data )
     .catch((err) => {

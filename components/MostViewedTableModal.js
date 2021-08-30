@@ -28,8 +28,8 @@ export default function MostViewedTableModal({ mostViewed }) {
 
   const data = mostViewed.map((verbatim, index) => {
     const verbatimType = Object.keys(verbatim).find((key) => key !== 'views');
-    const { views } = verbatim;
     const { sheetTitle, data } = verbatim[verbatimType]
+    const views = data.filter((item) => 'views' in item)[0]?.views;
     const pageTitle = data.find((item) => item['pageTitle'])['pageTitle']
     const correspondentTitle = sheetList[sheetTitle]
     const thesis = data.find((item) => item[correspondentTitle])[correspondentTitle]
@@ -37,7 +37,7 @@ export default function MostViewedTableModal({ mostViewed }) {
     return {
       id: index + 1,
       verbatim: <Link href={url}>{`${sheetTitle} ${pageTitle} - ${thesis}`}</Link>,
-      views: views
+      views: views == null ? 0 : views
       }
   })
 

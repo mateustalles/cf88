@@ -120,17 +120,32 @@ export const deleteOne = async (db, page) => {
 }
 
 export const incrementViews = async (db, sheetSlug, pageSlug) => {
-  const incrementView = await db.collection('pages').update(
+  await db.collection('pages').updateOne(
       {
         [`${sheetSlug}.pageSlug`]: pageSlug,
+        [`${sheetSlug}.data.views`]: { $exists: false }
       },
       {
-        $inc: { views: 1 }
+        $push: { [`${sheetSlug}.data`]: { views: 0 } },
+      },
+      {
+        upsert: true
       }
     ).then((data) => data )
     .catch((err) => {
       throw Error(err);
     });
 
-  return incrementView;
+  await db.collection('pages').updateOne(
+      {
+        [`${sheetSlug}.pageSlug`]: pageSlug,
+        [`${sheetSlug}.data`]: { $elemMatch: { views: { $exists: true } } }
+      },
+      {
+        $inc: { [`${sheetSlug}.data.$.views`]: 1 }
+      }
+    ).then((data) => data )
+    .catch((err) => {
+      throw Error(err);
+    });
 }
