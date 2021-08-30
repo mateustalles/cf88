@@ -8,9 +8,8 @@ handler.use(all);
 handler.post(async (req, res) => {
   const { body: { sheetSlug, pageSlug } } = req;
   await incrementViews(req.db, sheetSlug, pageSlug)
-    .then((data) => res.send(200).json(data))
+    .then((data) => res.status(200).json(data))
     .catch((err) => {
-      console.log(err.message)
       throw new Error(err);
     })
 });
